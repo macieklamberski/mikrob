@@ -6,5 +6,8 @@
         "files": [
             "functions.php"
         ]
+    },
+    "require": {
+        "erusev/parsedown": "^1.7"
     }
 }
