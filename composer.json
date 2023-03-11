@@ -1,19 +1,7 @@
 {
     "name": "lamberski/mikrob",
     "description": "Ultralight site generator for PHP pages.",
-    "keywords": [
-        "static",
-        "site",
-        "generator"
-    ],
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Maciej Lamberski",
-            "email": "maciej@lamberski.com",
-            "homepage": "http://lamberski.com"
-        }
-    ],
     "autoload": {
         "files": [
             "functions.php"
