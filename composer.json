@@ -1,6 +1,6 @@
 {
     "name": "lamberski/mikrob",
-    "description": "Ultralight site generator for PHP pages.",
+    "description": "Ultralight website engine.",
     "license": "MIT",
     "autoload": {
         "files": [
