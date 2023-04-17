@@ -62,7 +62,13 @@ function load_page(SplFileInfo $info): object|false
     if ($type === 'md') {
         preg_match('/---json((?!---).*)---(.*)/s', file_get_contents($file), $data);
 
+
         $page = json_decode(get_value($data, '1'));
+
+        if (!$page) {
+            throw new Error("Page $file is not correctly formatted and cannot be read.");
+        }
+
         $page->body = (new Parsedown())->text(get_value($data, '2'));
     }
 
