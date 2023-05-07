@@ -4,6 +4,7 @@
 
 ### Added
 - Error message if *.md file cannot be read.
+- Redirection functionality.
 
 ## v1.0.0
 

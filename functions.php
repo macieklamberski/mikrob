@@ -105,6 +105,18 @@ function index_pages(string $path = 'pages'): array
     return $pages;
 }
 
+function redirect_to(string $path, array $redirect): void
+{
+    $destination = get_value($redirect, 'destination');
+    $permanent = get_value($redirect, 'permanent');
+
+    if (!$destination) {
+        throw new Error("Redirection in $path has no destination.");
+    }
+
+    header('Location: '.$destination, true, $permanent ? 301 : 302);
+}
+
 function render_page(string $path = null): string
 {
     $pages = index_pages();
@@ -112,9 +124,14 @@ function render_page(string $path = null): string
     $path = $path ?: detect_path();
     $page = get_value($pages, $path);
     $view = get_value($page, 'view');
+    $redirect = get_value($page, 'redirect');
 
     if (!$page) {
         throw new Error("Page $path not found.");
+    }
+
+    if ($redirect) {
+        return redirect_to($path, $redirect);
     }
 
     if (!$view) {
