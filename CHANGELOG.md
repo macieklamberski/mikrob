@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.2
+
+### Fixed
+- Extend type hinting in `redirect_to()` to accept objects or arrays
+
 ## v1.0.1
 
 ### Added

@@ -105,7 +105,7 @@ function index_pages(string $path = 'pages'): array
     return $pages;
 }
 
-function redirect_to(string $path, array $redirect): void
+function redirect_to(string $path, array|object $redirect): void
 {
     $destination = get_value($redirect, 'destination');
     $permanent = get_value($redirect, 'permanent');
