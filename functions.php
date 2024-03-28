@@ -1,5 +1,13 @@
 <?php
 
+namespace Mikrob;
+
+use Error;
+use Parsedown;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+
 set_exception_handler(fn($exception) => print $exception->getMessage());
 
 function get_value(mixed $data, string $key, mixed $default = null): mixed

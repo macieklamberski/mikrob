@@ -1,9 +1,18 @@
 # Changelog
 
+## v1.1.0
+
+### Added
+- `Mikrob` namespace for all the functions to avoid conflicts with other packages.
+- _.gitignore_ file and ignored vendor Composer's directory.
+
+### Fixed
+- Typo in the _CHANGELOG.md_ file.
+
 ## v1.0.2
 
 ### Fixed
-- Extend type hinting in `redirect_to()` to accept objects or arrays
+- Type hinting in `redirect_to()` to accept objects or arrays.
 
 ## v1.0.1
 

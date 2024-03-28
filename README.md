@@ -19,7 +19,7 @@ chdir('..');
 
 require 'vendor/autoload.php';
 
-print render_page();
+print Mikrob\render_page();
 ```
 
 Then start the server:
@@ -157,7 +157,7 @@ The main page view has the `$page` variable containing all the fields defined in
 You can include other views (partials) using `load_view(string $path, array $data = [])`. The second parameter is useful for passing down any values necessary for the partial.
 
 ```php
-<?= load_view('partials/header', ['title' => $page->title]) ?>
+<?= Mikrob\load_view('partials/header', ['title' => $page->title]) ?>
 ```
 
 ## Roadmap
