@@ -8,7 +8,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
 
-set_exception_handler(fn($exception) => print $exception->getMessage());
+set_exception_handler(fn ($exception) => print $exception->getMessage());
 
 function get_value(mixed $data, string $key, mixed $default = null): mixed
 {
@@ -108,7 +108,7 @@ function index_pages(string $path = 'pages'): array
         $pages[$page->path] = $page;
     }
 
-    uasort($pages, fn($a, $b) => strcmp($a->file, $b->file));
+    uasort($pages, fn ($a, $b) => strcmp($a->file, $b->file));
 
     return $pages;
 }
