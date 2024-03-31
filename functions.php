@@ -54,6 +54,23 @@ function load_view(string $view, array $data = []): string
     return $html;
 }
 
+function find_page(array $pages, string $path): object|false
+{
+    if ($page = get_value($pages, $path)) {
+        return $page;
+    }
+
+    foreach ($pages as $key => $page) {
+        $pattern = !str_starts_with($key, '/') ? "/$key/" : $key;
+
+        if (preg_match($pattern, $path)) {
+            return $page;
+        }
+    }
+
+    return false;
+}
+
 function load_page(SplFileInfo $info): object|false
 {
     $file = $info->getPathname();
@@ -130,7 +147,7 @@ function render_page(string $path = null): string
     $pages = index_pages();
 
     $path = $path ?: detect_path();
-    $page = get_value($pages, $path);
+    $page = find_page($pages, $path);
     $view = get_value($page, 'view');
     $redirect = get_value($page, 'redirect');
 

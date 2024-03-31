@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.0
+
+### Added
+- Ability to use regular expressions in `path` to create wildcard pages.
+
 ## v1.1.0
 
 ### Added
