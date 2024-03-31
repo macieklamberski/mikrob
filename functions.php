@@ -139,7 +139,7 @@ function redirect_to(string $path, array|object $redirect): void
         throw new Error("Redirection in $path has no destination.");
     }
 
-    header('Location: '.$destination, true, $permanent ? 301 : 302);
+    header("Location: $destination", true, $permanent ? 301 : 302);
 }
 
 function render_page(string $path = null): string
@@ -150,6 +150,7 @@ function render_page(string $path = null): string
     $page = find_page($pages, $path);
     $view = get_value($page, 'view');
     $redirect = get_value($page, 'redirect');
+    $status = get_value($page, 'status');
 
     if (!$page) {
         throw new Error("Page $path not found.");
@@ -157,6 +158,10 @@ function render_page(string $path = null): string
 
     if ($redirect) {
         return redirect_to($path, $redirect);
+    }
+
+    if ($status && !headers_sent()) {
+        http_response_code($status);
     }
 
     if (!$view) {

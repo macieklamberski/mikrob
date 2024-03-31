@@ -4,6 +4,7 @@
 
 ### Added
 - Ability to use regular expressions in `path` to create wildcard pages.
+- Ability specify HTTP response code for given page via the new `status` property.
 
 ## v1.1.0
 
