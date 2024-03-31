@@ -30,7 +30,11 @@ function detect_path(): string
 
 function clean_path(string $path): string
 {
-    $regex = '/\/?pages|\/?((index\/?){0,2}\.[a-zA-Z]+)/';
+    $regex = [
+        '/^\/?pages/',
+        '/\/?(index\/?){1,2}\.[a-zA-Z]+/',
+        '/\.[a-zA-Z]+$/',
+    ];
 
     return preg_replace($regex, '', $path) ?: '/';
 }
