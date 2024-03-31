@@ -12,18 +12,13 @@ set_exception_handler(fn ($exception) => print $exception->getMessage());
 
 function get_value(mixed $data, string $key, mixed $default = null): mixed
 {
-    if (is_object($data)) {
-        return !empty($data->$key) ? $data->$key : $default;
-    }
-
-    return !empty($data[$key]) ? $data[$key] : $default;
+    return is_object($data) ? $data->$key ?? $default : $data[$key] ?? $default;
 }
 
 function detect_path(): string
 {
     return parse_url(
-        get_value($_SERVER, 'REQUEST_URI') ?:
-        get_value(getopt('', ['path:']), 'path'),
+        $_SERVER['REQUEST_URI'] ?? getopt('', ['path:'])['path'] ?? '',
         PHP_URL_PATH
     );
 }
@@ -52,10 +47,7 @@ function load_view(string $view, array $data = []): string
 
     ob_start();
     require $file;
-    $html = ob_get_contents();
-    ob_end_clean();
-
-    return $html;
+    return ob_get_clean();
 }
 
 function find_page(array $pages, string $path): object|false
