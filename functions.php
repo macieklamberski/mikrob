@@ -52,15 +52,13 @@ function load_view(string $view, array $data = []): string
 
 function find_page(array $pages, string $path): object|false
 {
-    if ($page = get_value($pages, $path)) {
-        return $page;
+    if ($exact_page = get_value($pages, $path)) {
+        return $exact_page;
     }
 
-    foreach ($pages as $key => $page) {
-        $pattern = !str_starts_with($key, '/') ? "/$key/" : $key;
-
-        if (preg_match($pattern, $path)) {
-            return $page;
+    foreach ($pages as $regex_path => $regex_page) {
+        if (@preg_match($regex_path, $path)) {
+            return $regex_page;
         }
     }
 
@@ -83,7 +81,6 @@ function load_page(SplFileInfo $info): object|false
     if ($type === 'md') {
         preg_match('/---json((?!---).*)---(.*)/s', file_get_contents($file), $data);
 
-
         $page = json_decode(get_value($data, '1'));
 
         if (!$page) {
@@ -105,23 +102,26 @@ function load_page(SplFileInfo $info): object|false
 
 function index_pages(string $path = 'pages'): array
 {
-    $files = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($path)
-    );
-
+    $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+    $files = iterator_to_array($files);
     $pages = [];
+
+    uasort($files, function ($a, $b) {
+        $file_a = $a->getPathname();
+        $file_b = $b->getPathname();
+        $depth_a = substr_count($file_a, '/');
+        $depth_b = substr_count($file_b, '/');
+
+        return $depth_a === $depth_b ? strcmp($file_a, $file_b) : $depth_b - $depth_a;
+    });
 
     foreach ($files as $file) {
         $page = load_page($file);
 
-        if ($page === false) {
-            continue;
+        if ($page !== false) {
+            $pages[$page->path] = $page;
         }
-
-        $pages[$page->path] = $page;
     }
-
-    uasort($pages, fn ($a, $b) => strcmp($a->file, $b->file));
 
     return $pages;
 }
@@ -138,11 +138,16 @@ function redirect_to(string $path, array|object $redirect): void
     header("Location: $destination", true, $permanent ? 301 : 302);
 }
 
-function render_page(string $path = null): string
+function render_page(string $path = null, $is_echo = true): string|false
 {
-    $pages = index_pages();
-
     $path = $path ?: detect_path();
+    $file = "public/$path";
+
+    if (is_file($file)) {
+        return false;
+    }
+
+    $pages = index_pages();
     $page = find_page($pages, $path);
     $view = get_value($page, 'view');
     $redirect = get_value($page, 'redirect');
@@ -164,5 +169,11 @@ function render_page(string $path = null): string
         throw new Error("Page $path has no view defined.");
     }
 
-    return load_view($view, ['pages' => $pages, 'page' => $page]);
+    $output = load_view($view, ['pages' => $pages, 'page' => $page]);
+
+    if ($is_echo) {
+        echo $output;
+    }
+
+    return $output;
 }

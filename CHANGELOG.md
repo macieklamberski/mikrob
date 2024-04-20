@@ -3,6 +3,7 @@
 ## v1.2.1
 
 ### Added
+- The logic for regular expression paths has been adjusted to better support nested pages.
 - The roadmap section has been removed from the _README.md_ file.
 
 ## v1.2.0
