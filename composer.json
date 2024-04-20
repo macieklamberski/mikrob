@@ -1,6 +1,6 @@
 {
     "name": "lamberski/mikrob",
-    "description": "Ultralight website engine.",
+    "description": "Simple website engine.",
     "license": "MIT",
     "autoload": {
         "files": [

@@ -1,6 +1,6 @@
 # Mikrob 🦠
 
-Ultralight website engine.
+Simple website engine.
 
 ## Overview
 
