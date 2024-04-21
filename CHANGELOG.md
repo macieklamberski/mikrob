@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.0
+
+### Added
+- Add ability to read named parameters from current path.
+
 ## v1.2.1
 
 ### Added

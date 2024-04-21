@@ -57,6 +57,13 @@ function find_page(array $pages, string $path): object|false
     }
 
     foreach ($pages as $regex_path => $regex_page) {
+        if (@preg_match($regex_path, $path, $params)) {
+            $regex_page->params = array_filter($params, 'is_string', ARRAY_FILTER_USE_KEY);
+
+            return $regex_page;
+        }
+
+
         if (@preg_match($regex_path, $path)) {
             return $regex_page;
         }
