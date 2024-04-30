@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.0
+
+### Added
+- New format of JSON front matter in Markdown files, now it's only "---" instead old "---json".
+
 ## v1.3.0
 
 ### Added

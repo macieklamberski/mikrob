@@ -91,7 +91,7 @@ return [
 Each _\*.md_ file should consist of two parts — the front matter (JSON-based) and the page body written in Markdown. This format is intended for content-heavy pages and blog posts. The markdown part will be accessible in view as `$page->body`.
 
 ```md
----json
+---
 {
     "view": "post",
     "title": "My first post",

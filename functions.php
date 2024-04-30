@@ -86,7 +86,7 @@ function load_page(SplFileInfo $info): object|false
     }
 
     if ($type === 'md') {
-        preg_match('/---json((?!---).*)---(.*)/s', file_get_contents($file), $data);
+        preg_match('/---((?!---).*)---(.*)/s', file_get_contents($file), $data);
 
         $page = json_decode(get_value($data, '1'));
 
