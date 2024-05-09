@@ -2,7 +2,7 @@
 
 namespace Mikrob;
 
-use Error;
+use Exception;
 use Parsedown;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -39,7 +39,7 @@ function load_view(string $view, array $data = []): string
     $file = "views/$view.php";
 
     if (!file_exists($file)) {
-        throw new Error("View $file not found.");
+        throw new Exception("View $file not found.");
     }
 
     extract($data);
@@ -60,11 +60,6 @@ function find_page(array $pages, string $path): object|false
         if (@preg_match($regex_path, $path, $params)) {
             $regex_page->params = array_filter($params, 'is_string', ARRAY_FILTER_USE_KEY);
 
-            return $regex_page;
-        }
-
-
-        if (@preg_match($regex_path, $path)) {
             return $regex_page;
         }
     }
@@ -91,7 +86,7 @@ function load_page(SplFileInfo $info): object|false
         $page = json_decode(get_value($data, '1'));
 
         if (!$page) {
-            throw new Error("Page $file is not correctly formatted and cannot be read.");
+            throw new Exception("Page $file is not correctly formatted and cannot be read.");
         }
 
         $page->body = (new Parsedown())->text(get_value($data, '2'));
@@ -139,7 +134,7 @@ function redirect_to(string $path, array|object $redirect): void
     $permanent = get_value($redirect, 'permanent');
 
     if (!$destination) {
-        throw new Error("Redirection in $path has no destination.");
+        throw new Exception("Redirection in $path has no destination.");
     }
 
     header("Location: $destination", true, $permanent ? 301 : 302);
@@ -161,7 +156,7 @@ function render_page(string $path = null, $is_echo = true): string|false
     $status = get_value($page, 'status');
 
     if (!$page) {
-        throw new Error("Page $path not found.");
+        throw new Exception("Page $path not found.");
     }
 
     if ($redirect) {
@@ -173,7 +168,7 @@ function render_page(string $path = null, $is_echo = true): string|false
     }
 
     if (!$view) {
-        throw new Error("Page $path has no view defined.");
+        throw new Exception("Page $path has no view defined.");
     }
 
     $output = load_view($view, ['pages' => $pages, 'page' => $page]);

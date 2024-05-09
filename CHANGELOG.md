@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.1
+
+### Added
+- Replace usage of Error with Exception as this is more semantically correct class.
+- Remove wrongly duplicated fragment of code.
+
 ## v1.4.0
 
 ### Added
