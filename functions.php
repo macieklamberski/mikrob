@@ -12,7 +12,7 @@ set_exception_handler(fn ($exception) => print $exception->getMessage());
 
 function get_value(mixed $data, string $key, mixed $default = null): mixed
 {
-    return is_object($data) ? $data->$key ?? $default : $data[$key] ?? $default;
+    return (is_object($data) ? $data->$key : $data[$key]) ?? $default;
 }
 
 function detect_path(): string
@@ -163,12 +163,12 @@ function render_page(string $path = null, $is_echo = true): string|false
         return redirect_to($path, $redirect);
     }
 
-    if ($status && !headers_sent()) {
-        http_response_code($status);
-    }
-
     if (!$view) {
         throw new Exception("Page $path has no view defined.");
+    }
+
+    if ($status && !headers_sent()) {
+        http_response_code($status);
     }
 
     $output = load_view($view, ['pages' => $pages, 'page' => $page]);
