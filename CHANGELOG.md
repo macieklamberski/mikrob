@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.3
+
+### Added
+- Bring back previous version of get_value with working warning supression when undefined.
+
 ## v1.4.2
 
 ### Added

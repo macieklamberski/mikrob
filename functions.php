@@ -12,7 +12,7 @@ set_exception_handler(fn ($exception) => print $exception->getMessage());
 
 function get_value(mixed $data, string $key, mixed $default = null): mixed
 {
-    return (is_object($data) ? $data->$key : $data[$key]) ?? $default;
+    return is_object($data) ? $data->$key ?? $default : $data[$key] ?? $default;
 }
 
 function detect_path(): string
