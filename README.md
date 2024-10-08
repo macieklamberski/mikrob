@@ -7,7 +7,7 @@ Simple website engine.
 Install the Composer package:
 
 ```bash
-composer require lamberski/mikrob
+composer require macieklamberski/mikrob
 ```
 
 Create `public/index.php` and paste:

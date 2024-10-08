@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.2
+
+### Added
+- Rename package prefix to use new username.
+
 ## v1.4.1
 
 ### Added
