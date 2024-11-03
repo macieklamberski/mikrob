@@ -1,6 +1,6 @@
 {
   "name": "mikrob",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "exports": {
     ".": {
@@ -9,7 +9,8 @@
     }
   },
   "files": [
-    "index.ts"
+    "index.ts",
+    "locale.json"
   ],
   "dependencies": {
     "hono": "^4.6.8"
