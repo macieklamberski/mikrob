@@ -58,17 +58,12 @@ export const isValidFile = (filePath: string, fileRegex: RegExp): boolean => {
   return existsSync(filePath) && statSync(filePath).isFile() && fileRegex.test(filePath)
 }
 
-export const loadJsTs = async <T>(filePath: string): Promise<T | undefined> => {
+export const loadModule = async <T>(
+  filePath: string,
+  { asJson }: { asJson?: boolean } = {},
+): Promise<T | undefined> => {
   try {
-    return (await import(filePath)).default
-  } catch (error) {
-    showWarn(filePath, error)
-  }
-}
-
-export const loadJson = async (filePath: string): Promise<ReturnType<typeof JSON.parse>> => {
-  try {
-    return (await import(filePath, { with: { type: 'json' } })).default
+    return (await import(filePath, asJson ? { with: { type: 'json' } } : undefined)).default
   } catch (error) {
     showWarn(filePath, error)
   }
@@ -83,11 +78,11 @@ export const loadPage = async (
   let pageData: PageData | undefined = undefined
 
   if (isValidFile(filePath, jsTsFileRegex)) {
-    pageData = await loadJsTs<PageData>(filePath)
+    pageData = await loadModule<PageData>(filePath)
   }
 
   if (isValidFile(filePath, /\.json$/)) {
-    pageData = await loadJson(filePath)
+    pageData = await loadModule<PageData>(filePath, { asJson: true })
   }
 
   // TODO: Implement Markdown support using Marked (?).
@@ -137,7 +132,7 @@ export const loadView = async (pageData: PageData): Promise<PageView | undefined
     return showWarn(view, locale.viewNotFoundOrNotSupported)
   }
 
-  const pageView = await loadJsTs<PageView>(view)
+  const pageView = await loadModule<PageView>(view)
 
   if (typeof pageView !== 'function') {
     return showWarn(pageData.view, locale.noDefaultExport)

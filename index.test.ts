@@ -10,8 +10,7 @@ import {
   createPage,
   createPages,
   isValidFile,
-  loadJsTs,
-  loadJson,
+  loadModule,
   loadPage,
   loadPages,
   loadView,
@@ -69,9 +68,9 @@ describe('isValidFile', () => {
   })
 })
 
-describe('loadJsTs', () => {
-  test('loads valid module with default export', async () => {
-    const result = await loadJsTs<() => string>(join(viewsDir, 'Empty.tsx'))
+describe('loadModule', () => {
+  test('loads valid JS/TS module with default export', async () => {
+    const result = await loadModule<() => string>(join(viewsDir, 'Empty.tsx'))
 
     expect(result).toBeDefined()
     expect(typeof result).toBe('function')
@@ -80,7 +79,7 @@ describe('loadJsTs', () => {
 
   test('returns undefined for non-existent file', async () => {
     const viewPath = join(viewsDir, 'NonExistent.tsx')
-    const result = await loadJsTs(viewPath)
+    const result = await loadModule(viewPath)
 
     expect(result).toBeUndefined()
     expectMockWarnToHaveBeenCalledWith(viewPath, expect.stringContaining('ResolveMessage'))
@@ -88,14 +87,14 @@ describe('loadJsTs', () => {
 
   test('returns undefined for file without default export', async () => {
     const viewPath = join(viewsDir, 'NoDefault.tsx')
-    const result = await loadJsTs(viewPath)
+    const result = await loadModule(viewPath)
 
     expect(result).toBeUndefined()
   })
 
   test('returns undefined for file with syntax error', async () => {
     const viewPath = join(viewsDir, 'InvalidSyntax.tsx')
-    const result = await loadJsTs(viewPath)
+    const result = await loadModule(viewPath)
 
     expect(result).toBeUndefined()
     expectMockWarnToHaveBeenCalledWith(viewPath, expect.stringContaining('BuildMessage'))
@@ -103,18 +102,16 @@ describe('loadJsTs', () => {
 
   test('loads module with async default export', async () => {
     const viewPath = join(viewsDir, 'Async.tsx')
-    const result = await loadJsTs<() => Promise<string>>(viewPath)
+    const result = await loadModule<() => Promise<string>>(viewPath)
 
     expect(result).toBeDefined()
     expect(typeof result).toBe('function')
     expect(await result?.()).toBe('Hello async!')
   })
-})
 
-describe('loadJson', () => {
   test('loads valid JSON file', async () => {
     const pagePath = join(pagesDir, 'valid-5.json')
-    const content = await loadJson(pagePath)
+    const content = await loadModule(pagePath, { asJson: true })
 
     expect(content).toBeDefined()
     expect(typeof content).toBe('object')
@@ -125,25 +122,17 @@ describe('loadJson', () => {
     })
   })
 
-  test('returns undefined for non-existent file', async () => {
-    const pagePath = join(pagesDir, 'nonexistent.json')
-    const content = await loadJson(pagePath)
-
-    expect(content).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pagePath, expect.stringContaining('ResolveMessage'))
-  })
-
   test('handles invalid JSON format', async () => {
     const pagePath = join(pagesDir, 'invalid-5.json')
-    const content = await loadJson(pagePath)
+    const content = await loadModule(pagePath, { asJson: true })
 
     expect(content).toBeUndefined()
     expectMockWarnToHaveBeenCalledWith(pagePath, expect.stringContaining('SyntaxError'))
   })
 
-  test('handles empty files', async () => {
+  test('handles empty JSON files', async () => {
     const pagePath = join(pagesDir, 'invalid-6.json')
-    const content = await loadJson(pagePath)
+    const content = await loadModule(pagePath, { asJson: true })
 
     expect(content).toBeUndefined()
     expectMockWarnToHaveBeenCalledWith(pagePath, expect.stringContaining('SyntaxError'))
