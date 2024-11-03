@@ -1,0 +1,5 @@
+{
+  "noViewDefined": "No 'view' defined",
+  "viewNotFoundOrNotSupported": "View file not found or not supported",
+  "noDefaultExport": "No 'default' export found or is not a function"
+}

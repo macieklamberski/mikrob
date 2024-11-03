@@ -1,0 +1,22 @@
+{
+  "name": "mikrob",
+  "version": "2.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.ts",
+      "types": "./index.ts"
+    }
+  },
+  "files": [
+    "index.ts"
+  ],
+  "dependencies": {
+    "hono": "^4.6.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "^1.1.13",
+    "bun": "^1.1.34"
+  }
+}
