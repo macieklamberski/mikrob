@@ -2,6 +2,12 @@
 
 ## v2.0.0
 
+### Fixed
+- Update publish action.
+- Include locale file into the published package.
+
+## v2.0.0
+
 ### Added
 - Rewrite the package in TypeScript.
 - Add a collection of unit tests to cover all functionalities.
