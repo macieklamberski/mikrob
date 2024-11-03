@@ -8,9 +8,7 @@
       "types": "./index.ts"
     }
   },
-  "files": [
-    "index.ts"
-  ],
+  "files": ["index.ts", "locale.json"],
   "dependencies": {
     "hono": "^4.6.8"
   },
