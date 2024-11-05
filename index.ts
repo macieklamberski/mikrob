@@ -8,8 +8,8 @@ import { jsxRenderer } from 'hono/jsx-renderer'
 import type { RedirectStatusCode, StatusCode } from 'hono/utils/http-status'
 import locale from './locale.json' with { type: 'json' }
 
-export const pageFileRegex = /\.(js|jsx|ts|tsx|json|md)$/
-export const jsTsFileRegex = /\.(js|jsx|ts|tsx)$/
+export const pageFileRegex = /\.(js|jsx|ts|tsx|json|md)$/i
+export const jsTsFileRegex = /\.(js|jsx|ts|tsx)$/i
 
 export type MikrobOptions = {
   serveStatic?: typeof serveStaticBun | typeof serveStaticDeno
@@ -81,7 +81,7 @@ export const loadPage = async (
     pageData = await loadModule<PageData>(filePath)
   }
 
-  if (isValidFile(filePath, /\.json$/)) {
+  if (isValidFile(filePath, /\.json$/i)) {
     pageData = await loadModule<PageData>(filePath, { asJson: true })
   }
 
