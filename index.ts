@@ -1,4 +1,5 @@
 import { existsSync, readdirSync, statSync } from 'node:fs'
+import { readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { type Context, type Handler, Hono } from 'hono'
 import type { serveStatic as serveStaticBun } from 'hono/bun'
@@ -6,6 +7,7 @@ import type { serveStatic as serveStaticDeno } from 'hono/deno'
 import type { FC } from 'hono/jsx'
 import { jsxRenderer } from 'hono/jsx-renderer'
 import type { RedirectStatusCode, StatusCode } from 'hono/utils/http-status'
+import { marked } from 'marked'
 import locale from './locale.json' with { type: 'json' }
 
 export const pageFileRegex = /\.(js|jsx|ts|tsx|json|md)$/i
@@ -13,7 +15,6 @@ export const jsTsFileRegex = /\.(js|jsx|ts|tsx)$/i
 
 export type MikrobOptions = {
   serveStatic?: typeof serveStaticBun | typeof serveStaticDeno
-  parseMarkdown?: (markdown: string) => string
   staticDir?: string
   pagesDir?: string
   viewsDir?: string
@@ -69,30 +70,50 @@ export const loadModule = async <T>(
   }
 }
 
+export const loadMarkdown = async (filePath: string): Promise<PageDefinition | undefined> => {
+  try {
+    const file = await readFile((await import(filePath)).default, { encoding: 'utf-8' })
+    const match = file.match(/^---\n(.*?)\n---\n(.*)/s)
+
+    if (!match) {
+      return showWarn(filePath, locale.markdownNotCorrectFormat)
+    }
+
+    return {
+      ...JSON.parse(match[1]),
+      body: marked(match[2]),
+    }
+  } catch (error) {
+    showWarn(filePath, error)
+  }
+}
+
 export const loadPage = async (
   fileName: string,
   pagesDir: string,
   viewsDir: string,
 ): Promise<PageData | undefined> => {
   const filePath = join(pagesDir, fileName)
-  let pageData: PageData | undefined = undefined
+  let pageDefinition: PageDefinition | undefined = undefined
 
   if (isValidFile(filePath, jsTsFileRegex)) {
-    pageData = await loadModule<PageData>(filePath)
+    pageDefinition = await loadModule<PageDefinition>(filePath)
   }
 
   if (isValidFile(filePath, /\.json$/i)) {
-    pageData = await loadModule<PageData>(filePath, { asJson: true })
+    pageDefinition = await loadModule<PageDefinition>(filePath, { asJson: true })
   }
 
-  // TODO: Implement Markdown support using Marked (?).
+  if (isValidFile(filePath, /\.md/i)) {
+    pageDefinition = await loadMarkdown(filePath)
+  }
 
-  if (pageData) {
+  if (pageDefinition) {
     return {
-      ...pageData,
+      ...pageDefinition,
       file: filePath,
-      path: cleanPath(pageData.path || fileName),
-      view: pageData.view && join(viewsDir, pageData.view),
+      path: cleanPath(pageDefinition.path || fileName),
+      view: pageDefinition.view && join(viewsDir, pageDefinition.view),
     }
   }
 }

@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.1.0
+
+### Added
+- Add support for Markdown files.
+
 ## v2.0.1
 
 ### Fixed

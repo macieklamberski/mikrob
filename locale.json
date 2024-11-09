@@ -1,5 +1,6 @@
 {
   "noViewDefined": "No 'view' defined",
   "viewNotFoundOrNotSupported": "View file not found or not supported",
-  "noDefaultExport": "No 'default' export found or is not a function"
+  "noDefaultExport": "No 'default' export found or is not a function",
+  "markdownNotCorrectFormat": "File is either not correctly formatted or lacks front matter"
 }

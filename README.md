@@ -40,7 +40,7 @@ Mikrob uses a file-based routing system similar to Next.js and Astro. Pages are 
 
 - **JSON** - For static content,
 - **TS/TSX** - For dynamic content and data fetching,
-- **Markdown** (WIP) - For content-rich pages and blog posts.
+- **Markdown** - For content-rich pages and blog posts.
 
 _index.{json,ts,tsx,md}_ files receive special treatment by stripping away the "index" segment from the path.
 
@@ -83,7 +83,7 @@ export default {
 }
 ```
 
-### Markdown (WIP)
+### Markdown
 
 Each _\*.md_ file should consist of two parts: the front matter (in JSON format) and the page body written in Markdown. This structure is designed for content-heavy pages and blog posts. The Markdown section will be accessible in view as `props.page.body`.
 

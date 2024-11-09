@@ -1,6 +1,6 @@
 {
   "name": "mikrob",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "type": "module",
   "exports": {
     ".": {
@@ -13,7 +13,8 @@
     "locale.json"
   ],
   "dependencies": {
-    "hono": "^4.6.8"
+    "hono": "^4.6.9",
+    "marked": "^14.1.4"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

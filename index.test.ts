@@ -10,6 +10,7 @@ import {
   createPage,
   createPages,
   isValidFile,
+  loadMarkdown,
   loadModule,
   loadPage,
   loadPages,
@@ -139,6 +140,43 @@ describe('loadModule', () => {
   })
 })
 
+describe('loadMarkdown', () => {
+  test('processes valid markdown file with front matter', async () => {
+    const pagePath = join(pagesDir, 'valid-6.md')
+    const result = await loadMarkdown(pagePath)
+
+    expect(result).toEqual({
+      view: 'Post.tsx',
+      title: 'Test Post',
+      body: '<h1>Hello World</h1>\n<p>This is a test post.</p>\n'
+    })
+  })
+
+  test('handles invalid front matter JSON', async () => {
+    const pagePath = join(pagesDir, 'invalid-7.md')
+    const result = await loadMarkdown(pagePath)
+
+    expect(result).toBeUndefined()
+    expectMockWarnToHaveBeenCalledWith(pagePath, expect.stringContaining('SyntaxError'))
+  })
+
+  test('handles missing front matter delimiters', async () => {
+    const pagePath = join(pagesDir, 'invalid-8.md')
+    const result = await loadMarkdown(pagePath)
+
+    expect(result).toBeUndefined()
+    expectMockWarnToHaveBeenCalledWith(pagePath, locale.markdownNotCorrectFormat)
+  })
+
+  test('handles file read errors', async () => {
+    const pagePath = join(pagesDir, 'non-existent.md')
+    const result = await loadMarkdown(pagePath)
+
+    expect(result).toBeUndefined()
+    expectMockWarnToHaveBeenCalledWith(pagePath, expect.stringContaining('ResolveMessage'))
+  })
+})
+
 describe('cleanPath', () => {
   test('removes file extensions', () => {
     expect(cleanPath('/page.tsx')).toBe('/page')
@@ -255,7 +293,7 @@ describe('loadPages', async () => {
   const pages = await loadPages(pagesDir, viewsDir)
 
   test('loads correct number of pages', () => {
-    expect(pages.length).toEqual(8)
+    expect(pages.length).toEqual(9)
   })
 
   test('loads pages in correct order', () => {
@@ -267,6 +305,8 @@ describe('loadPages', async () => {
       'valid-2.ts',
       'valid-3.jsx',
       'valid-4.js',
+      'valid-5.json',
+      'valid-6.md',
     ]
 
     for (let i = 0; i < order.length; ++i) {
