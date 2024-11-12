@@ -23,7 +23,8 @@ export type PageDefinition = {
   status?: StatusCode
   view?: string
   redirect?: string
-  [key: string]: unknown
+  // biome-ignore lint/suspicious/noExplicitAny: Page definition can contain any custom data.
+  [key: string]: any
 }
 
 export type PageData = PageDefinition & {

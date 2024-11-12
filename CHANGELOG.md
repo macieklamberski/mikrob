@@ -3,8 +3,9 @@
 ## v2.1.1
 
 ### Added
-- Simplify loading Markdown files by using import() with type 'text'.
+- Simplify loading Markdown files by using import() with type `text`.
 - Simplify type definition of serveStatic option.
+- Update `PageDefinition` type to allow `any` type for custom data.
 
 ## v2.1.0
 
