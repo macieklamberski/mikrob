@@ -1,5 +1,4 @@
 import { existsSync, readdirSync, statSync } from 'node:fs'
-import { readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { type Context, type Handler, Hono } from 'hono'
 import type { serveStatic as serveStaticBun } from 'hono/bun'
@@ -72,7 +71,7 @@ export const loadModule = async <T>(
 
 export const loadMarkdown = async (filePath: string): Promise<PageDefinition | undefined> => {
   try {
-    const file = await readFile((await import(filePath)).default, { encoding: 'utf-8' })
+    const file = (await import(filePath, { with: { type: 'text' } })).default
     const match = file.match(/^---\n(.*?)\n---\n(.*)/s)
 
     if (!match) {

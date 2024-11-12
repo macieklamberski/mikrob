@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.1.1
+
+### Added
+- Simplify loading Markdown files by using import() with type 'text'.
+
 ## v2.1.0
 
 ### Added
