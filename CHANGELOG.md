@@ -4,6 +4,7 @@
 
 ### Added
 - Simplify loading Markdown files by using import() with type 'text'.
+- Simplify type definition of serveStatic option.
 
 ## v2.1.0
 

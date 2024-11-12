@@ -2,7 +2,6 @@ import { existsSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { type Context, type Handler, Hono } from 'hono'
 import type { serveStatic as serveStaticBun } from 'hono/bun'
-import type { serveStatic as serveStaticDeno } from 'hono/deno'
 import type { FC } from 'hono/jsx'
 import { jsxRenderer } from 'hono/jsx-renderer'
 import type { RedirectStatusCode, StatusCode } from 'hono/utils/http-status'
@@ -13,7 +12,7 @@ export const pageFileRegex = /\.(js|jsx|ts|tsx|json|md)$/i
 export const jsTsFileRegex = /\.(js|jsx|ts|tsx)$/i
 
 export type MikrobOptions = {
-  serveStatic?: typeof serveStaticBun | typeof serveStaticDeno
+  serveStatic?: typeof serveStaticBun
   staticDir?: string
   pagesDir?: string
   viewsDir?: string
