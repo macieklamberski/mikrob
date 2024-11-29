@@ -1,6 +1,7 @@
 # Changelog
 
 ## v2.2.0
+- Always prefix cleaned paths with forwards slash.
 - Bump Hono and Bun to latest versions.
 - Simplify changelog entries by removing sections.
 

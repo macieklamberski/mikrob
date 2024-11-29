@@ -194,6 +194,10 @@ describe('cleanPath', () => {
     expect(cleanPath('//about//')).toBe('/about')
   })
 
+  test('adds slash at the beginning when not present', () => {
+    expect(cleanPath('about')).toBe('/about')
+  })
+
   test('handles edge cases', () => {
     expect(cleanPath('')).toBe('/')
     expect(cleanPath('index.tsx')).toBe('/')
@@ -208,7 +212,7 @@ describe('loadPage', () => {
     expect(page).toEqual({
       file: join(pagesDir, 'valid-1.tsx'),
       view: join(viewsDir, 'Test.tsx'),
-      path: 'valid-1',
+      path: '/valid-1',
       name: 'Test',
     })
   })
@@ -219,7 +223,7 @@ describe('loadPage', () => {
     expect(page).toEqual({
       file: join(pagesDir, 'valid-2.ts'),
       view: join(viewsDir, 'Test.tsx'),
-      path: 'test',
+      path: '/test',
     })
   })
 
@@ -228,7 +232,7 @@ describe('loadPage', () => {
 
     expect(page).toEqual({
       file: join(pagesDir, 'valid-3.jsx'),
-      path: 'valid-3',
+      path: '/valid-3',
       redirect: 'https://domain.com',
       status: 301,
     })
@@ -240,7 +244,7 @@ describe('loadPage', () => {
     expect(page).toEqual({
       file: join(pagesDir, 'valid-4.js'),
       view: join(viewsDir, 'Test.tsx'),
-      path: '*',
+      path: '/*',
       status: 201,
     })
   })
@@ -251,7 +255,7 @@ describe('loadPage', () => {
     expect(page).toEqual({
       file: join(pagesDir, 'nested/valid.ts'),
       view: join(viewsDir, 'Test.tsx'),
-      path: 'nested/valid',
+      path: '/nested/valid',
     })
   })
 
@@ -261,7 +265,7 @@ describe('loadPage', () => {
     expect(page).toEqual({
       file: join(pagesDir, 'valid-5.json'),
       view: join(viewsDir, 'Test.tsx'),
-      path: 'something',
+      path: '/something',
       status: 201,
     })
   })
@@ -272,7 +276,7 @@ describe('loadPage', () => {
     expect(page).toEqual({
       view: join(viewsDir, 'NonExistent.tsx'),
       file: join(pagesDir, 'invalid-2.tsx'),
-      path: 'invalid-2',
+      path: '/invalid-2',
     })
   })
 

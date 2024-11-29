@@ -48,9 +48,11 @@ export const showWarn = (file: string | undefined, error: unknown): undefined =>
 export const cleanPath = (path: string): string => {
   return path
     .replace(pageFileRegex, '')
-    .replace(/^index$/, '')
-    .replace(/(?:\/index)*\/*$/, '')
-    .replace(/^\/+/, '/')
+    .replace(/^(?!\/)/, '/')
+    .replace(/\/+/g, '/')
+    .replace(/\/index(?:\/index)*/, '')
+    .replace(/^\/index$/, '/')
+    .replace(/\/+$/, '')
     .replace(/^$/, '/')
 }
 
