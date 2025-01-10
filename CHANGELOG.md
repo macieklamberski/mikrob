@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.1
+- Bump version of packages used in the project.
+- Add `typescript` package to dev dependencies.
+
 ## v2.2.0
 - Always prefix cleaned paths with forwards slash.
 - Bump Hono and Bun to latest versions.

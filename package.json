@@ -1,6 +1,6 @@
 {
   "name": "mikrob",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "type": "module",
   "exports": {
     ".": {
@@ -8,17 +8,15 @@
       "types": "./index.ts"
     }
   },
-  "files": [
-    "index.ts",
-    "locale.json"
-  ],
+  "files": ["index.ts", "locale.json"],
   "dependencies": {
-    "hono": "^4.6.12",
+    "hono": "^4.6.16",
     "marked": "^14.1.4"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/bun": "^1.1.14",
-    "bun": "^1.1.37"
+    "@types/bun": "^1.1.16",
+    "bun": "^1.1.43",
+    "typescript": "^5.7.3"
   }
 }
