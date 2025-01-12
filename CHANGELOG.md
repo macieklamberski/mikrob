@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.3.0
+- Add support for restarting the dev server when adding/deleting new files in the project.
+
 ## v2.2.1
 - Bump version of packages used in the project.
 - Add `typescript` package to dev dependencies.

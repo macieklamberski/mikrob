@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { watch } from 'node:fs'
+import { execArgv } from 'node:process'
 import path, { join } from 'node:path'
 import { type Context, Hono } from 'hono'
 import type { serveStatic as serveStaticBun } from 'hono/bun'
@@ -7,6 +9,7 @@ import {
   type PageData,
   type PageList,
   cleanPath,
+  createApp,
   createPage,
   createPages,
   isValidFile,
@@ -29,7 +32,7 @@ const expectMockWarnToHaveBeenCalledWith = (file: string, message: string) => {
   expect(mockWarn).toHaveBeenCalledWith('🦠', `[${file}]`, message)
 }
 
-let realWarn: typeof console.warn
+const realWarn = console.warn
 let mockWarn: ReturnType<typeof mock>
 
 beforeEach(() => {
@@ -148,7 +151,7 @@ describe('loadMarkdown', () => {
     expect(result).toEqual({
       view: 'Post.tsx',
       title: 'Test Post',
-      body: '<h1>Hello World</h1>\n<p>This is a test post.</p>\n'
+      body: '<h1>Hello World</h1>\n<p>This is a test post.</p>\n',
     })
   })
 
@@ -585,15 +588,15 @@ describe('createPages', async () => {
   })
 })
 
-describe('mikrob', async () => {
+describe('createApp', async () => {
   test('mikrob initializes application with default directories', async () => {
-    const app = await mikrob()
+    const app = await createApp()
 
     expect(app.routes.length).toBe(1)
   })
 
   test('handles non-existent directories', async () => {
-    const app = await mikrob({
+    const app = await createApp({
       staticDir: 'non-existent',
       pagesDir: 'non-existent',
       viewsDir: 'non-existent',
@@ -603,7 +606,7 @@ describe('mikrob', async () => {
   })
 
   test('mikrob initializes application with custom directories', async () => {
-    const app = await mikrob({ staticDir, pagesDir, viewsDir })
+    const app = await createApp({ staticDir, pagesDir, viewsDir })
 
     expect(app.routes.length).toBe(7)
   })
@@ -611,7 +614,7 @@ describe('mikrob', async () => {
   test('applies static file serving middleware', async () => {
     const serveStaticMock = mock()
 
-    await mikrob({
+    await createApp({
       staticDir,
       pagesDir,
       viewsDir,
@@ -622,7 +625,7 @@ describe('mikrob', async () => {
   })
 
   test('registers routes from pages', async () => {
-    const app = await mikrob({ staticDir, pagesDir, viewsDir })
+    const app = await createApp({ staticDir, pagesDir, viewsDir })
     const registeredPaths = app.routes.map((route) => route.path)
 
     expect(registeredPaths).toContain('/test')
@@ -630,7 +633,7 @@ describe('mikrob', async () => {
   })
 
   test('handles request to existing page', async () => {
-    const app = await mikrob({ staticDir, pagesDir, viewsDir })
+    const app = await createApp({ staticDir, pagesDir, viewsDir })
 
     const request = new Request('http://localhost/valid-1', {
       headers: { Accept: 'text/html', 'Content-Type': 'text/html' },
@@ -644,14 +647,14 @@ describe('mikrob', async () => {
   })
 
   test('handles request to non-existent page', async () => {
-    const app = await mikrob()
+    const app = await createApp()
     const response = await app.request('/non-existent')
 
     expect(response.status).toBe(404)
   })
 
   test('handles redirect pages', async () => {
-    const app = await mikrob({ staticDir, pagesDir, viewsDir })
+    const app = await createApp({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-3')
 
     expect(response.status).toBe(301)
@@ -659,7 +662,7 @@ describe('mikrob', async () => {
   })
 
   test('handles pages with custom status codes', async () => {
-    const app = await mikrob({ staticDir, pagesDir, viewsDir })
+    const app = await createApp({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-4')
 
     expect(response.status).toBe(201)
@@ -667,7 +670,7 @@ describe('mikrob', async () => {
 
   test('serves static files when configured', async () => {
     const mockServeStatic = mock(() => async () => new Response('static')) as typeof serveStaticBun
-    const app = await mikrob({
+    const app = await createApp({
       staticDir,
       pagesDir,
       viewsDir,
@@ -680,9 +683,31 @@ describe('mikrob', async () => {
   })
 
   test('applies JSX renderer middleware', async () => {
-    const app = await mikrob({ staticDir, pagesDir, viewsDir })
+    const app = await createApp({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-1')
 
     expect(response.headers.get('Content-Type')).toContain('text/html')
+  })
+})
+
+describe('mikrob', async () => {
+  test('does not reinitialize application on file change when not in watch mode', async () => {
+    const mockWatch = mock(watch)
+
+    mock.module('node:fs', () => ({ watch: mockWatch }))
+    await mikrob()
+
+    expect(mockWatch).not.toHaveBeenCalled()
+  })
+
+  test('reinitializes application on file change in watch mode', async () => {
+    const mockWatch = mock(watch)
+
+    mock.module('node:fs', () => ({ watch: mockWatch }))
+    execArgv.push('--watch')
+    await mikrob()
+    execArgv.pop()
+
+    expect(mockWatch).toHaveBeenCalled()
   })
 })

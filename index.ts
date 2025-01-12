@@ -1,5 +1,6 @@
-import { existsSync, readdirSync, statSync } from 'node:fs'
+import { watch, existsSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
+import { execArgv, cwd } from 'node:process'
 import { type Context, type Handler, Hono } from 'hono'
 import type { serveStatic as serveStaticBun } from 'hono/bun'
 import type { FC } from 'hono/jsx'
@@ -204,12 +205,12 @@ export const createPages = async (app: Hono, pageList: PageList): Promise<void> 
   }
 }
 
-export const mikrob = async (options: MikrobOptions = {}) => {
-  const app = new Hono()
+export const createApp = async (options: MikrobOptions = {}): Promise<Hono> => {
+  const staticDir = resolve(cwd(), options.staticDir || 'static')
+  const pagesDir = resolve(cwd(), options.pagesDir || 'pages')
+  const viewsDir = resolve(cwd(), options.viewsDir || 'views')
 
-  const staticDir = resolve(process.cwd(), options.staticDir || 'static')
-  const pagesDir = resolve(process.cwd(), options.pagesDir || 'pages')
-  const viewsDir = resolve(process.cwd(), options.viewsDir || 'views')
+  const app = new Hono()
 
   if (options.serveStatic) {
     app.use('*', options.serveStatic({ root: staticDir }))
@@ -218,6 +219,18 @@ export const mikrob = async (options: MikrobOptions = {}) => {
   app.use('*', jsxRenderer())
 
   await createPages(app, await loadPages(pagesDir, viewsDir))
+
+  return app
+}
+
+export const mikrob = async (options: MikrobOptions = {}) => {
+  let app = await createApp(options)
+
+  if (execArgv.includes('--watch')) {
+    watch(cwd(), { recursive: true }, async () => {
+      app = await createApp(options)
+    })
+  }
 
   return app
 }
