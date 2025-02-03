@@ -1,4 +1,5 @@
 export default {
-  view: 'Response.tsx',
+  view: 'Test.tsx',
+  path: '*',
   status: 201,
 }

@@ -35,11 +35,11 @@ export type PageData = PageDefinition & {
 
 export type PageList = Array<PageData>
 
-export type PageView = FC<{
+export type PageView = (props: {
   context: Context
   pages: PageList
   page: PageData
-}>
+}) => Response | ReturnType<FC>
 
 export const showWarn = (file: string | undefined, error: unknown): undefined => {
   const message = error instanceof Error ? error.stack : `${error}`
@@ -183,15 +183,9 @@ export const createPage = async (
       context.status(pageData.status)
     }
 
-    try {
-      return await context.render(pageView({ context, pages: pageList, page: pageData }) || '')
-    } catch (errorOrResponse) {
-      if (errorOrResponse instanceof Response) {
-        return errorOrResponse
-      }
+    const page = await pageView({ context, pages: pageList, page: pageData })
 
-      throw errorOrResponse
-    }
+    return page instanceof Response ? page : context.render(page || '')
   }
 }
 

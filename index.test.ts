@@ -4,7 +4,7 @@ import { execArgv } from 'node:process'
 import path, { join } from 'node:path'
 import { type Context, Hono } from 'hono'
 import type { serveStatic as serveStaticBun } from 'hono/bun'
-import type { RedirectStatusCode, StatusCode } from 'hono/utils/http-status'
+import type { StatusCode } from 'hono/utils/http-status'
 import {
   type PageData,
   type PageList,
@@ -242,10 +242,10 @@ describe('loadPage', () => {
   })
 
   test('processes valid JS page with view and status', async () => {
-    const page = await loadPage('valid-4.js', pagesDir, viewsDir)
+    const page = await loadPage('valid-7.js', pagesDir, viewsDir)
 
     expect(page).toEqual({
-      file: join(pagesDir, 'valid-4.js'),
+      file: join(pagesDir, 'valid-7.js'),
       view: join(viewsDir, 'Test.tsx'),
       path: '/*',
       status: 201,
@@ -300,7 +300,7 @@ describe('loadPages', async () => {
   const pages = await loadPages(pagesDir, viewsDir)
 
   test('loads correct number of pages', () => {
-    expect(pages.length).toEqual(9)
+    expect(pages.length).toEqual(10)
   })
 
   test('loads pages in correct order', () => {
@@ -314,6 +314,7 @@ describe('loadPages', async () => {
       'valid-4.js',
       'valid-5.json',
       'valid-6.md',
+      'valid-7.js',
     ]
 
     for (let i = 0; i < order.length; ++i) {
@@ -424,7 +425,7 @@ describe('createPage', () => {
       file: join(viewsDir, 'redirect.tsx'),
       path: '/old',
       redirect: '/new',
-      status: 301 as RedirectStatusCode,
+      status: 301 as StatusCode,
     }
     const handler = await createPage(pageData, [])
 
@@ -485,23 +486,18 @@ describe('createPage', () => {
     expect(mockContext.status).toHaveBeenCalledWith(201)
   })
 
-  test('handles Response objects thrown from view', async () => {
-    const customResponse = new Response('Custom response', { status: 418 })
-    const mockContext = {
-      render: mock(() => {
-        throw customResponse
-      }),
-    } as unknown as Context
+  test('handles Response return from view', async () => {
+    const mockContext = {} as unknown as Context
     const pageData = {
-      file: join(pagesDir, 'test.tsx'),
-      view: join(viewsDir, 'Test.tsx'),
+      file: join(pagesDir, 'response.tsx'),
+      view: join(viewsDir, 'Response.tsx'),
       path: '/test',
     }
     const handler = await createPage(pageData, [])
     const response = await handler?.(mockContext, async () => {})
 
     expect(handler).toBeDefined()
-    expect(response).toBe(customResponse)
+    expect(response).toBeInstanceOf(Response)
   })
 
   test('throws non-Response errors', async () => {
@@ -572,13 +568,13 @@ describe('createPages', async () => {
 
     await createPages(app, pages)
 
-    expect(app.routes.length).toEqual(6)
+    expect(app.routes.length).toEqual(7)
   })
 
   test('registers pages in correct order', async () => {
     const app = new Hono()
     const pages = await loadPages(pagesDir, viewsDir)
-    const order = ['/nested/valid', '/valid-1', '/test', '/valid-3', '/*']
+    const order = ['/nested/valid', '/valid-1', '/test', '/valid-3', '/valid-4', '/something', '/*']
 
     await createPages(app, pages)
 
@@ -608,7 +604,7 @@ describe('createApp', async () => {
   test('mikrob initializes application with custom directories', async () => {
     const app = await createApp({ staticDir, pagesDir, viewsDir })
 
-    expect(app.routes.length).toBe(7)
+    expect(app.routes.length).toBe(8)
   })
 
   test('applies static file serving middleware', async () => {
@@ -663,9 +659,17 @@ describe('createApp', async () => {
 
   test('handles pages with custom status codes', async () => {
     const app = await createApp({ staticDir, pagesDir, viewsDir })
-    const response = await app.request('/valid-4')
+    const response = await app.request('/valid-7')
 
     expect(response.status).toBe(201)
+  })
+
+  test('handles pages with custom Response', async () => {
+    const app = await createApp({ staticDir, pagesDir, viewsDir })
+    const response = await app.request('/valid-4')
+
+    expect(await response.text()).toBe('Not authorized')
+    expect(response.status).toBe(403)
   })
 
   test('serves static files when configured', async () => {

@@ -218,6 +218,32 @@ const Post: PageView = ({ context, pages, page }) => {
 export default Post
 ```
 
+### Custom Response
+
+Page views can also directly return a `Response` object for full control over the HTTP response. This enables:
+-  Custom status codes,
+-  Conditional redirects,
+-  Custom headers,
+-  Alternative content types.
+
+Example:
+
+```tsx
+import type { PageView } from './types'
+
+const SecretPage: PageView = ({ context }) => {
+  const isAuthorized = checkAuth(request)
+
+  if (!isAuthorized) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
+  return <div>Secret Content</div>
+}
+
+export default SecretPage
+```
+
 ## Configuration
 
 Mikrob follows a convention-over-configuration approach but allows customizing the location of key directories through options passed to `mikrob({ … })` function.

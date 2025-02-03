@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.4.0
+- Add support for returning `Response` object in `PageView` to allow customizing the reponses.
+
 ## v2.3.0
 - Add support for restarting the dev server when adding/deleting new files in the project.
 
