@@ -2,6 +2,7 @@
 
 ## v2.4.0
 - Add support for returning `Response` object in `PageView` to allow customizing the reponses.
+- Bump version of Marked to 15.x and other packages to newest versions.
 
 ## v2.3.0
 - Add support for restarting the dev server when adding/deleting new files in the project.
