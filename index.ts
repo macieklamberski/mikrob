@@ -199,7 +199,7 @@ export const createPages = async (app: Hono, pageList: PageList): Promise<void> 
   }
 }
 
-export const createApp = async (options: MikrobOptions = {}): Promise<Hono> => {
+export const createServer = async (options: MikrobOptions = {}): Promise<Hono> => {
   const staticDir = resolve(cwd(), options.staticDir || 'static')
   const pagesDir = resolve(cwd(), options.pagesDir || 'pages')
   const viewsDir = resolve(cwd(), options.viewsDir || 'views')
@@ -218,11 +218,11 @@ export const createApp = async (options: MikrobOptions = {}): Promise<Hono> => {
 }
 
 export const mikrob = async (options: MikrobOptions = {}) => {
-  let app = await createApp(options)
+  let app = await createServer(options)
 
   if (execArgv.includes('--watch')) {
     watch(cwd(), { recursive: true }, async () => {
-      app = await createApp(options)
+      app = await createServer(options)
     })
   }
 

@@ -9,7 +9,7 @@ import {
   type PageData,
   type PageList,
   cleanPath,
-  createApp,
+  createServer,
   createPage,
   createPages,
   isValidFile,
@@ -584,15 +584,15 @@ describe('createPages', async () => {
   })
 })
 
-describe('createApp', async () => {
+describe('createServer', async () => {
   test('mikrob initializes application with default directories', async () => {
-    const app = await createApp()
+    const app = await createServer()
 
     expect(app.routes.length).toBe(1)
   })
 
   test('handles non-existent directories', async () => {
-    const app = await createApp({
+    const app = await createServer({
       staticDir: 'non-existent',
       pagesDir: 'non-existent',
       viewsDir: 'non-existent',
@@ -602,7 +602,7 @@ describe('createApp', async () => {
   })
 
   test('mikrob initializes application with custom directories', async () => {
-    const app = await createApp({ staticDir, pagesDir, viewsDir })
+    const app = await createServer({ staticDir, pagesDir, viewsDir })
 
     expect(app.routes.length).toBe(8)
   })
@@ -610,7 +610,7 @@ describe('createApp', async () => {
   test('applies static file serving middleware', async () => {
     const serveStaticMock = mock()
 
-    await createApp({
+    await createServer({
       staticDir,
       pagesDir,
       viewsDir,
@@ -621,7 +621,7 @@ describe('createApp', async () => {
   })
 
   test('registers routes from pages', async () => {
-    const app = await createApp({ staticDir, pagesDir, viewsDir })
+    const app = await createServer({ staticDir, pagesDir, viewsDir })
     const registeredPaths = app.routes.map((route) => route.path)
 
     expect(registeredPaths).toContain('/test')
@@ -629,7 +629,7 @@ describe('createApp', async () => {
   })
 
   test('handles request to existing page', async () => {
-    const app = await createApp({ staticDir, pagesDir, viewsDir })
+    const app = await createServer({ staticDir, pagesDir, viewsDir })
 
     const request = new Request('http://localhost/valid-1', {
       headers: { Accept: 'text/html', 'Content-Type': 'text/html' },
@@ -643,14 +643,14 @@ describe('createApp', async () => {
   })
 
   test('handles request to non-existent page', async () => {
-    const app = await createApp()
+    const app = await createServer()
     const response = await app.request('/non-existent')
 
     expect(response.status).toBe(404)
   })
 
   test('handles redirect pages', async () => {
-    const app = await createApp({ staticDir, pagesDir, viewsDir })
+    const app = await createServer({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-3')
 
     expect(response.status).toBe(301)
@@ -658,14 +658,14 @@ describe('createApp', async () => {
   })
 
   test('handles pages with custom status codes', async () => {
-    const app = await createApp({ staticDir, pagesDir, viewsDir })
+    const app = await createServer({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-7')
 
     expect(response.status).toBe(201)
   })
 
   test('handles pages with custom Response', async () => {
-    const app = await createApp({ staticDir, pagesDir, viewsDir })
+    const app = await createServer({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-4')
 
     expect(await response.text()).toBe('Not authorized')
@@ -674,7 +674,7 @@ describe('createApp', async () => {
 
   test('serves static files when configured', async () => {
     const mockServeStatic = mock(() => async () => new Response('static')) as typeof serveStaticBun
-    const app = await createApp({
+    const app = await createServer({
       staticDir,
       pagesDir,
       viewsDir,
@@ -687,7 +687,7 @@ describe('createApp', async () => {
   })
 
   test('applies JSX renderer middleware', async () => {
-    const app = await createApp({ staticDir, pagesDir, viewsDir })
+    const app = await createServer({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-1')
 
     expect(response.headers.get('Content-Type')).toContain('text/html')
