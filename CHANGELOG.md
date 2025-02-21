@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.5.0
+- Remove Marked integration and add the reasoning to the documentation.
+- Bump version of Hono.
+
 ## v2.4.0
 - Add support for returning `Response` object in `PageView` to allow customizing responses.
 - Bump version of Marked to 15.x and other packages to the newest versions.

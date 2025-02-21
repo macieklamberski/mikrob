@@ -6,7 +6,6 @@ import type { serveStatic as serveStaticBun } from 'hono/bun'
 import type { FC } from 'hono/jsx'
 import { jsxRenderer } from 'hono/jsx-renderer'
 import type { RedirectStatusCode, StatusCode } from 'hono/utils/http-status'
-import { marked } from 'marked'
 import locale from './locale.json' with { type: 'json' }
 
 export const pageFileRegex = /\.(js|jsx|ts|tsx|json|md)$/i
@@ -83,7 +82,7 @@ export const loadMarkdown = async (filePath: string): Promise<PageDefinition | u
 
     return {
       ...JSON.parse(match[1]),
-      body: marked(match[2]),
+      body: match[2],
     }
   } catch (error) {
     showWarn(filePath, error)

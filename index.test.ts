@@ -144,14 +144,14 @@ describe('loadModule', () => {
 })
 
 describe('loadMarkdown', () => {
-  test('processes valid markdown file with front matter', async () => {
+  test('handle markdown file with front matter', async () => {
     const pagePath = join(pagesDir, 'valid-6.md')
     const result = await loadMarkdown(pagePath)
 
     expect(result).toEqual({
       view: 'Post.tsx',
       title: 'Test Post',
-      body: '<h1>Hello World</h1>\n<p>This is a test post.</p>\n',
+      body: '# Hello World\n\nThis is a test post.\n',
     })
   })
 

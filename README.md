@@ -99,6 +99,8 @@ Each _\*.md_ file should consist of two parts: the front matter (in JSON format)
 This is the content of my **first post**. It's nice.
 ```
 
+**Important:**: Mikrob doesn't automatically handle Markdown parsing. This gives you the flexibility to customize how Markdown is processed, like adding syntax highlighting or sanitizing it before display. To keep things simple, Mikrob only provides raw Markdown content to work with. If you need a tool to parse it, check out [Marked](https://npmjs.com/package/marked).
+
 **Note:** Mikrob uses JSON instead of YAML for the front matter to reduce the number of dependencies required by the package. YAML needs an additional package for reading, while JSON is natively supported (duh).
 
 ### Custom page order and path
