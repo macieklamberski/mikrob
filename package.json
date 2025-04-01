@@ -13,12 +13,12 @@
     "locale.json"
   ],
   "dependencies": {
-    "hono": "^4.7.2"
+    "hono": "^4.9.9"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@types/bun": "^1.2.2",
-    "bun": "^1.2.2",
-    "typescript": "^5.7.3"
+    "@biomejs/biome": "^2.2.4",
+    "@types/bun": "^1.2.23",
+    "bun": "^1.2.23",
+    "typescript": "^5.9.2"
   }
 }
