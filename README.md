@@ -2,11 +2,11 @@
 
 Simple file-based website engine.
 
-Mikrob is a zero-configuration website engine that transforms your file structure into a fully functional website. Built on top of Hono, it supports multiple JavaScript runtimes and offers a flexible page system with React views.
+Mikrob is a zero-configuration website engine that transforms your file structure into a fully functional website. Built on top of Bun and Hono, it offers a flexible page system with JSX views.
 
 ## Quick Start
 
-Install the package with your favourite package manger (`bun`, `deno`, `npm`, `pnpm`, `yarn`):
+Install the package with your favourite package manager:
 
 ```bash
 bun install mikrob
@@ -15,12 +15,9 @@ bun install mikrob
 Create `index.ts` in root of your project and paste:
 
 ```ts
-import { serveStatic } from 'hono/bun' // Bun
-import { serveStatic } from 'hono/deno' // Deno
-import { serveStatic } from '@hono/node-server/serve-static' // Node
 import { mikrob } from 'mikrob'
 
-export default await mikrob({ serveStatic })
+await mikrob()
 ```
 
 Then start the server:
@@ -181,7 +178,7 @@ You can create a page that redirects to another location by using the `redirect`
 
 ## Views
 
-Mikrob leverages React components as view templates, providing a familiar and powerful way to structure the UI. Views are stored in the `views` directory and can access page data through props.
+Mikrob leverages JSX components as view templates, providing a familiar and powerful way to structure the UI. Views are stored in the `views` directory and can access page data through props.
 
 View Requirements:
 1. File Type: Must be JavaScript/TypeScript (.js, .jsx, .ts, or .tsx),
@@ -245,25 +242,3 @@ const SecretPage: PageView = ({ context }) => {
 
 export default SecretPage
 ```
-
-## Configuration
-
-Mikrob follows a convention-over-configuration approach but allows customizing the location of key directories through options passed to `mikrob({ … })` function.
-
-```typescript
-import { mikrob } from 'mikrob'
-
-const app = await mikrob({
-  pagesDir: 'src/pages',
-  viewsDir: 'src/components',
-  staticDir: 'public'
-})
-```
-
-| Directory   | Default   | Purpose                                      |
-|-------------|-----------|----------------------------------------------|
-| `pagesDir`  | `/pages`  | Contains page files that define routes.      |
-| `viewsDir`  | `/views`  | Stores React components used as templates.   |
-| `staticDir` | `/static` | Houses static assets (images, styles, etc.)  |
-
-**Best Practice**: While you can customize directory locations, it's recommended to stick with the defaults unless you have a specific reason to change them (e.g., integrating with an existing project structure).
