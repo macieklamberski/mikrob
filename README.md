@@ -176,6 +176,22 @@ You can create a page that redirects to another location by using the `redirect`
 }
 ```
 
+## Static Files
+
+Mikrob automatically serves static files from the `static` directory using Bun's built-in static file serving. Any files placed in this directory (images, CSS, JavaScript, fonts, etc.) are served directly without processing.
+
+For example:
+- _/static/style.css_ → localhost:3000/style.css
+- _/static/images/logo.png_ → localhost:3000/images/logo.png
+
+You can customize the static directory location by passing the `staticDir` option to the `mikrob()` function:
+
+```ts
+await mikrob({
+  staticDir: 'public'
+})
+```
+
 ## Views
 
 Mikrob leverages JSX components as view templates, providing a familiar and powerful way to structure the UI. Views are stored in the `views` directory and can access page data through props.

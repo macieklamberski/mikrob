@@ -1,8 +1,8 @@
-import { watch, existsSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, statSync, watch } from 'node:fs'
 import { join, resolve } from 'node:path'
-import { execArgv, cwd } from 'node:process'
+import { cwd, execArgv } from 'node:process'
 import { type Context, type Handler, Hono } from 'hono'
-import type { serveStatic as serveStaticBun } from 'hono/bun'
+import { serveStatic } from 'hono/bun'
 import type { FC } from 'hono/jsx'
 import { jsxRenderer } from 'hono/jsx-renderer'
 import type { RedirectStatusCode, StatusCode } from 'hono/utils/http-status'
@@ -12,7 +12,6 @@ export const pageFileRegex = /\.(js|jsx|ts|tsx|json|md)$/i
 export const jsTsFileRegex = /\.(js|jsx|ts|tsx)$/i
 
 export type MikrobOptions = {
-  serveStatic?: typeof serveStaticBun
   staticDir?: string
   pagesDir?: string
   viewsDir?: string
@@ -205,10 +204,7 @@ export const createServer = async (options: MikrobOptions = {}): Promise<Hono> =
 
   const app = new Hono()
 
-  if (options.serveStatic) {
-    app.use('*', options.serveStatic({ root: staticDir }))
-  }
-
+  app.use('*', serveStatic({ root: staticDir }))
   app.use('*', jsxRenderer())
 
   await createPages(app, await loadPages(pagesDir, viewsDir))

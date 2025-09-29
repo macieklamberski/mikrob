@@ -3,7 +3,6 @@ import { watch } from 'node:fs'
 import { execArgv } from 'node:process'
 import path, { join } from 'node:path'
 import { type Context, Hono } from 'hono'
-import type { serveStatic as serveStaticBun } from 'hono/bun'
 import type { StatusCode } from 'hono/utils/http-status'
 import {
   type PageData,
@@ -607,19 +606,6 @@ describe('createServer', async () => {
     expect(app.routes.length).toBe(8)
   })
 
-  test('applies static file serving middleware', async () => {
-    const serveStaticMock = mock()
-
-    await createServer({
-      staticDir,
-      pagesDir,
-      viewsDir,
-      serveStatic: serveStaticMock,
-    })
-
-    expect(serveStaticMock).toHaveBeenCalledWith({ root: staticDir })
-  })
-
   test('registers routes from pages', async () => {
     const app = await createServer({ staticDir, pagesDir, viewsDir })
     const registeredPaths = app.routes.map((route) => route.path)
@@ -670,20 +656,6 @@ describe('createServer', async () => {
 
     expect(await response.text()).toBe('Not authorized')
     expect(response.status).toBe(403)
-  })
-
-  test('serves static files when configured', async () => {
-    const mockServeStatic = mock(() => async () => new Response('static')) as typeof serveStaticBun
-    const app = await createServer({
-      staticDir,
-      pagesDir,
-      viewsDir,
-      serveStatic: mockServeStatic,
-    })
-    const response = await app.request('/static/test.txt')
-    const text = await response.text()
-
-    expect(text).toBe('static')
   })
 
   test('applies JSX renderer middleware', async () => {
