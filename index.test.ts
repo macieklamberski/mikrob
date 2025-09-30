@@ -1,16 +1,14 @@
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { watch } from 'node:fs'
-import { execArgv } from 'node:process'
 import path, { join } from 'node:path'
+import { execArgv } from 'node:process'
 import { type Context, Hono } from 'hono'
 import type { StatusCode } from 'hono/utils/http-status'
 import {
-  type PageData,
-  type PageList,
   cleanPath,
-  createServer,
   createPage,
   createPages,
+  createServer,
   isValidFile,
   loadMarkdown,
   loadModule,
@@ -18,10 +16,12 @@ import {
   loadPages,
   loadView,
   mikrob,
+  type PageData,
+  type PageList,
   pageFileRegex,
   showWarn,
 } from './index'
-import locale from './locale.json' assert { type: 'json' }
+import locale from './locale.json' with { type: 'json' }
 
 const staticDir = path.resolve('mocks/static')
 const pagesDir = path.resolve('mocks/pages')
@@ -587,7 +587,7 @@ describe('createServer', async () => {
   test('mikrob initializes application with default directories', async () => {
     const app = await createServer()
 
-    expect(app.routes.length).toBe(1)
+    expect(app.routes.length).toBe(2)
   })
 
   test('handles non-existent directories', async () => {
@@ -597,13 +597,13 @@ describe('createServer', async () => {
       viewsDir: 'non-existent',
     })
 
-    expect(app.routes.length).toBe(1)
+    expect(app.routes.length).toBe(2)
   })
 
   test('mikrob initializes application with custom directories', async () => {
     const app = await createServer({ staticDir, pagesDir, viewsDir })
 
-    expect(app.routes.length).toBe(8)
+    expect(app.routes.length).toBe(9)
   })
 
   test('registers routes from pages', async () => {
