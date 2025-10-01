@@ -45,14 +45,14 @@ export const showWarn = (file: string | undefined, error: unknown): undefined =>
 }
 
 export const cleanPath = (path: string): string => {
-  return path
-    .replace(pageFileRegex, '')
-    .replace(/^(?!\/)/, '/')
-    .replace(/\/+/g, '/')
-    .replace(/\/index(?:\/index)*/, '')
-    .replace(/^\/index$/, '/')
-    .replace(/\/+$/, '')
-    .replace(/^$/, '/')
+  return (
+    path
+      .replace(pageFileRegex, '') // Remove file extension.
+      .replace(/^/, '/') // Add leading slash.
+      .replace(/\/+/g, '/') // Collapse multiple slashes.
+      .replace(/(?:\/index)+$/, '') // Remove /index from end.
+      .replace(/\/+$/, '') || '/' // Remove trailing slashes, default to /.
+  )
 }
 
 export const isValidFile = (filePath: string, fileRegex: RegExp): boolean => {
@@ -94,7 +94,7 @@ export const loadPage = async (
   viewsDir: string,
 ): Promise<PageData | undefined> => {
   const filePath = join(pagesDir, fileName)
-  let pageDefinition: PageDefinition | undefined = undefined
+  let pageDefinition: PageDefinition | undefined
 
   if (isValidFile(filePath, jsTsFileRegex)) {
     pageDefinition = await loadModule<PageDefinition>(filePath)
