@@ -1,17 +1,27 @@
 {
   "name": "mikrob",
-  "version": "2.5.0",
+  "description": "Simple file-based website engine.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/macieklamberski/mikrob.git"
+  },
+  "homepage": "https://github.com/macieklamberski/mikrob",
+  "bugs": {
+    "url": "https://github.com/macieklamberski/mikrob/issues"
+  },
+  "author": "Maciej Lamberski",
+  "license": "MIT",
   "type": "module",
+  "files": [
+    "index.ts",
+    "locale.json"
+  ],
   "exports": {
     ".": {
       "import": "./index.ts",
       "types": "./index.ts"
     }
   },
-  "files": [
-    "index.ts",
-    "locale.json"
-  ],
   "scripts": {
     "prepare": "lefthook install"
   },
