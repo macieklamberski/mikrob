@@ -1,5 +1,9 @@
 # Mikrob 🦠
 
+[![codecov](https://codecov.io/gh/macieklamberski/mikrob/branch/main/graph/badge.svg)](https://codecov.io/gh/macieklamberski/mikrob)
+[![npm version](https://img.shields.io/npm/v/mikrob.svg)](https://www.npmjs.com/package/mikrob)
+[![license](https://img.shields.io/npm/l/mikrob.svg)](https://github.com/macieklamberski/mikrob/blob/main/LICENSE)
+
 Simple file-based website engine.
 
 Mikrob is a zero-configuration website engine that transforms your file structure into a fully functional website. Built on top of Bun and Hono, it offers a flexible page system with JSX views.
