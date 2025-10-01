@@ -35,7 +35,7 @@ When opened in the browser, it will automatically detect and serve corresponding
 - _/pages/index.ts_ → localhost:3000,
 - _/pages/about.ts_ → localhost:3000/about.
 
-Mikrob supports also watch mode for automatic reloading:
+Mikrob also supports watch mode for automatic reloading:
 
 ```bash
 bun --watch index.ts
