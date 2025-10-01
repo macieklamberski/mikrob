@@ -12,13 +12,14 @@
     "index.ts",
     "locale.json"
   ],
+  "scripts": {
+    "prepare": "lefthook install"
+  },
   "dependencies": {
     "hono": "^4.9.9"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.4",
     "@types/bun": "^1.2.23",
-    "bun": "^1.2.23",
-    "typescript": "^5.9.2"
+    "kvalita": "^1.3.0"
   }
 }
