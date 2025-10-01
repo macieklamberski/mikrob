@@ -27,8 +27,17 @@ await mikrob()
 Then start the server:
 
 ```bash
-bun run index.ts
+bun index.ts
 ```
+
+Or with watch mode for automatic reloading:
+
+```bash
+bun --watch index.ts
+```
+
+> [!NOTE]
+> When you use Bun's `--watch` flag, Mikrob automatically detects it and sets up file watching to reload pages and views when they change. This is useful when you want to keep the app running continuously while modifying content, like adding blog posts or updating pages.
 
 When opened in the browser, it will automatically detect and serve corresponding page:
 
