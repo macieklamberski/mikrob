@@ -23,9 +23,9 @@ import {
 } from './index'
 import locale from './locale.json' with { type: 'json' }
 
-const staticDir = path.resolve('mocks/static')
-const pagesDir = path.resolve('mocks/pages')
-const viewsDir = path.resolve('mocks/views')
+const staticDir = path.resolve('src/mocks/static')
+const pagesDir = path.resolve('src/mocks/pages')
+const viewsDir = path.resolve('src/mocks/views')
 
 const expectMockWarnToHaveBeenCalledWith = (file: string, message: string) => {
   expect(mockWarn).toHaveBeenCalledWith('🦠', `[${file}]`, message)
