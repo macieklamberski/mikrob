@@ -1,3 +1,6 @@
 {
-  "extends": ["kvalita/biome"]
+  "extends": ["kvalita/biome"],
+  "files": {
+    "includes": ["**", "!src/mocks"]
+  }
 }
