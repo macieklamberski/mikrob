@@ -273,8 +273,3 @@ const SecretPage: PageView = ({ context }) => {
 
 export default SecretPage
 ```
-
-## License
-
-Licensed under the MIT license.<br/>
-Copyright 2025 Maciej Lamberski
