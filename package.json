@@ -26,6 +26,7 @@
     "prepare": "lefthook install"
   },
   "dependencies": {
+    "@types/node": "^24.0.0",
     "hono": "^4.10.7"
   },
   "devDependencies": {
