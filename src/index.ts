@@ -3,13 +3,20 @@ import { join, resolve } from 'node:path'
 import { cwd, execArgv } from 'node:process'
 import { type Context, type Handler, Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
-import type { FC } from 'hono/jsx'
 import { jsxRenderer } from 'hono/jsx-renderer'
+import type { HtmlEscapedString } from 'hono/utils/html'
 import type { RedirectStatusCode, StatusCode } from 'hono/utils/http-status'
 import locale from './locale.json' with { type: 'json' }
 
 export const pageFileRegex = /\.(js|jsx|ts|tsx|json|md)$/i
 export const jsTsFileRegex = /\.(js|jsx|ts|tsx)$/i
+const leadingSlashRegex = /^/
+const repeatedSlashRegex = /\/+/g
+const trailingIndexRegex = /(?:\/index)+$/
+const trailingSlashRegex = /\/+$/
+const frontMatterRegex = /^---\n(.*?)\n---\n(.*)/s
+const jsonFileRegex = /\.json$/i
+const markdownFileRegex = /\.md/i
 
 export type MikrobOptions = {
   staticDir?: string
@@ -37,7 +44,7 @@ export type PageView = (props: {
   context: Context
   pages: PageList
   page: PageData
-}) => Response | ReturnType<FC>
+}) => Response | HtmlEscapedString | Promise<HtmlEscapedString> | null
 
 export const showWarn = (file: string | undefined, error: unknown): undefined => {
   const message = error instanceof Error ? error.stack : `${error}`
@@ -48,10 +55,10 @@ export const cleanPath = (path: string): string => {
   return (
     path
       .replace(pageFileRegex, '') // Remove file extension.
-      .replace(/^/, '/') // Add leading slash.
-      .replace(/\/+/g, '/') // Collapse multiple slashes.
-      .replace(/(?:\/index)+$/, '') // Remove /index from end.
-      .replace(/\/+$/, '') || '/' // Remove trailing slashes, default to /.
+      .replace(leadingSlashRegex, '/') // Add leading slash.
+      .replace(repeatedSlashRegex, '/') // Collapse multiple slashes.
+      .replace(trailingIndexRegex, '') // Remove /index from end.
+      .replace(trailingSlashRegex, '') || '/' // Remove trailing slashes, default to /.
   )
 }
 
@@ -73,7 +80,7 @@ export const loadModule = async <T>(
 export const loadMarkdown = async (filePath: string): Promise<PageDefinition | undefined> => {
   try {
     const file = (await import(filePath, { with: { type: 'text' } })).default
-    const match = file.match(/^---\n(.*?)\n---\n(.*)/s)
+    const match = file.match(frontMatterRegex)
 
     if (!match) {
       return showWarn(filePath, locale.markdownNotCorrectFormat)
@@ -100,11 +107,11 @@ export const loadPage = async (
     pageDefinition = await loadModule<PageDefinition>(filePath)
   }
 
-  if (isValidFile(filePath, /\.json$/i)) {
+  if (isValidFile(filePath, jsonFileRegex)) {
     pageDefinition = await loadModule<PageDefinition>(filePath, { asJson: true })
   }
 
-  if (isValidFile(filePath, /\.md/i)) {
+  if (isValidFile(filePath, markdownFileRegex)) {
     pageDefinition = await loadMarkdown(filePath)
   }
 

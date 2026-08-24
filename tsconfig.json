@@ -6,7 +6,8 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["bun", "node"]
   },
   "exclude": ["src/mocks"]
 }
