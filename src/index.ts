@@ -47,7 +47,7 @@ export type PageView = (props: {
 }) => Response | HtmlEscapedString | Promise<HtmlEscapedString> | null
 
 export const showWarn = (file: string | undefined, error: unknown): undefined => {
-  const message = error instanceof Error ? error.stack : `${error}`
+  const message = (error instanceof Error && error.stack) || `${error}`
   console.warn('🦠', `[${file}]`, message)
 }
 
