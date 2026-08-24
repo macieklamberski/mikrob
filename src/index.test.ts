@@ -560,7 +560,7 @@ describe('createPage', () => {
   })
 })
 
-describe('createPages', async () => {
+describe('createPages', () => {
   test('registers all valid pages', async () => {
     const app = new Hono()
     const pages = await loadPages(pagesDir, viewsDir)
@@ -583,7 +583,7 @@ describe('createPages', async () => {
   })
 })
 
-describe('createServer', async () => {
+describe('createServer', () => {
   test('mikrob initializes application with default directories', async () => {
     const app = await createServer()
 
@@ -666,7 +666,7 @@ describe('createServer', async () => {
   })
 })
 
-describe('mikrob', async () => {
+describe('mikrob', () => {
   test('does not reinitialize application on file change when not in watch mode', async () => {
     const mockWatch = mock(watch)
 
