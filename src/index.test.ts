@@ -547,7 +547,7 @@ describe('createPage', () => {
     const response = handler?.(context, async () => {})
 
     expect(handler).toBeDefined()
-    expect(response).rejects.toThrow(testError)
+    await expect(response).rejects.toThrow(testError)
   })
 
   it('should pass correct data to view component', async () => {
