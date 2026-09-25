@@ -119,6 +119,7 @@ export const loadPage = async (
     return {
       ...pageDefinition,
       file: filePath,
+      // biome-ignore lint/nursery/useNullishCoalescing: An empty path falls back to the file name.
       path: cleanPath(pageDefinition.path || fileName),
       view: pageDefinition.view && join(viewsDir, pageDefinition.view),
     }
@@ -190,6 +191,7 @@ export const createPage = async (
 
     const page = await pageView({ context, pages: pageList, page: pageData })
 
+    // biome-ignore lint/nursery/useNullishCoalescing: A JS view can return false, which renders an empty page.
     return page instanceof Response ? page : context.render(page || '')
   }
 }
@@ -205,8 +207,11 @@ export const createPages = async (app: Hono, pageList: PageList): Promise<void> 
 }
 
 export const createServer = async (options: MikrobOptions = {}): Promise<Hono> => {
+  // biome-ignore lint/nursery/useNullishCoalescing: An empty directory option falls back to the default.
   const staticDir = resolve(cwd(), options.staticDir || 'static')
+  // biome-ignore lint/nursery/useNullishCoalescing: An empty directory option falls back to the default.
   const pagesDir = resolve(cwd(), options.pagesDir || 'pages')
+  // biome-ignore lint/nursery/useNullishCoalescing: An empty directory option falls back to the default.
   const viewsDir = resolve(cwd(), options.viewsDir || 'views')
 
   const app = new Hono()
