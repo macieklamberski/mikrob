@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
 import { watch } from 'node:fs'
 import path, { join } from 'node:path'
 import { execArgv } from 'node:process'
-import { type Context, Hono } from 'hono'
+import { Context, Hono } from 'hono'
 import type { StatusCode } from 'hono/utils/http-status'
 import {
   cleanPath,
@@ -27,10 +27,6 @@ const staticDir = path.resolve('src/mocks/static')
 const pagesDir = path.resolve('src/mocks/pages')
 const viewsDir = path.resolve('src/mocks/views')
 
-const expectMockWarnToHaveBeenCalledWith = (file: string, message: string) => {
-  expect(mockWarn).toHaveBeenCalledWith('🦠', `[${file}]`, message)
-}
-
 const realWarn = console.warn
 let mockWarn: ReturnType<typeof mock>
 
@@ -44,35 +40,35 @@ afterEach(() => {
 })
 
 describe('showWarn', () => {
-  test('formats warning messages', () => {
+  it('should format warning messages', () => {
     showWarn('test.tsx', new Error('Test error'))
     showWarn('pages/test.tsx', 'Invalid file')
 
     expect(mockWarn).toHaveBeenCalledTimes(2)
-    expectMockWarnToHaveBeenCalledWith('test.tsx', expect.stringContaining('Test error'))
-    expectMockWarnToHaveBeenCalledWith('pages/test.tsx', 'Invalid file')
+    expect(mockWarn).toHaveBeenCalledWith('🦠', '[test.tsx]', expect.stringContaining('Test error'))
+    expect(mockWarn).toHaveBeenCalledWith('🦠', '[pages/test.tsx]', 'Invalid file')
   })
 })
 
 describe('isValidFile', () => {
-  test('checks valid file', () => {
+  it('should return true for valid file', () => {
     const pagePath = path.join(pagesDir, 'valid-1.tsx')
     expect(isValidFile(pagePath, pageFileRegex)).toBe(true)
   })
 
-  test('checks invalid file', () => {
+  it('should return false for invalid file', () => {
     const pagePath = path.join(pagesDir, 'invalid-3.txt')
     expect(isValidFile(pagePath, pageFileRegex)).toBe(false)
   })
 
-  test('checks non-existent file', () => {
+  it('should return false for non-existent file', () => {
     const pagePath = path.join(pagesDir, 'nonexistent.file')
     expect(isValidFile(pagePath, pageFileRegex)).toBe(false)
   })
 })
 
 describe('loadModule', () => {
-  test('loads valid JS/TS module with default export', async () => {
+  it('should load valid JS/TS module with default export', async () => {
     const result = await loadModule<() => string>(join(viewsDir, 'Empty.tsx'))
 
     expect(result).toBeDefined()
@@ -80,30 +76,38 @@ describe('loadModule', () => {
     expect(result?.()).toBeNull()
   })
 
-  test('returns undefined for non-existent file', async () => {
+  it('should return undefined for non-existent file', async () => {
     const viewPath = join(viewsDir, 'NonExistent.tsx')
     const result = await loadModule(viewPath)
 
     expect(result).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(viewPath, expect.stringContaining('ResolveMessage'))
+    expect(mockWarn).toHaveBeenCalledWith(
+      '🦠',
+      `[${viewPath}]`,
+      expect.stringContaining('ResolveMessage'),
+    )
   })
 
-  test('returns undefined for file without default export', async () => {
+  it('should return undefined for file without default export', async () => {
     const viewPath = join(viewsDir, 'NoDefault.tsx')
     const result = await loadModule(viewPath)
 
     expect(result).toBeUndefined()
   })
 
-  test('returns undefined for file with syntax error', async () => {
+  it('should return undefined for file with syntax error', async () => {
     const viewPath = join(viewsDir, 'InvalidSyntax.tsx')
     const result = await loadModule(viewPath)
 
     expect(result).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(viewPath, expect.stringContaining('BuildMessage'))
+    expect(mockWarn).toHaveBeenCalledWith(
+      '🦠',
+      `[${viewPath}]`,
+      expect.stringContaining('BuildMessage'),
+    )
   })
 
-  test('loads module with async default export', async () => {
+  it('should load module with async default export', async () => {
     const viewPath = join(viewsDir, 'Async.tsx')
     const result = await loadModule<() => Promise<string>>(viewPath)
 
@@ -112,7 +116,7 @@ describe('loadModule', () => {
     expect(await result?.()).toBe('Hello async!')
   })
 
-  test('loads valid JSON file', async () => {
+  it('should load valid JSON file', async () => {
     const pagePath = join(pagesDir, 'valid-5.json')
     const content = await loadModule(pagePath, { asJson: true })
 
@@ -125,25 +129,33 @@ describe('loadModule', () => {
     })
   })
 
-  test('handles invalid JSON format', async () => {
+  it('should handle invalid JSON format', async () => {
     const pagePath = join(pagesDir, 'invalid-5.json')
     const content = await loadModule(pagePath, { asJson: true })
 
     expect(content).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pagePath, expect.stringContaining('SyntaxError'))
+    expect(mockWarn).toHaveBeenCalledWith(
+      '🦠',
+      `[${pagePath}]`,
+      expect.stringContaining('SyntaxError'),
+    )
   })
 
-  test('handles empty JSON files', async () => {
+  it('should handle empty JSON files', async () => {
     const pagePath = join(pagesDir, 'invalid-6.json')
     const content = await loadModule(pagePath, { asJson: true })
 
     expect(content).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pagePath, expect.stringContaining('SyntaxError'))
+    expect(mockWarn).toHaveBeenCalledWith(
+      '🦠',
+      `[${pagePath}]`,
+      expect.stringContaining('SyntaxError'),
+    )
   })
 })
 
 describe('loadMarkdown', () => {
-  test('handle markdown file with front matter', async () => {
+  it('should handle markdown file with front matter', async () => {
     const pagePath = join(pagesDir, 'valid-6.md')
     const result = await loadMarkdown(pagePath)
 
@@ -154,53 +166,61 @@ describe('loadMarkdown', () => {
     })
   })
 
-  test('handles invalid front matter JSON', async () => {
+  it('should handle invalid front matter JSON', async () => {
     const pagePath = join(pagesDir, 'invalid-7.md')
     const result = await loadMarkdown(pagePath)
 
     expect(result).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pagePath, expect.stringContaining('SyntaxError'))
+    expect(mockWarn).toHaveBeenCalledWith(
+      '🦠',
+      `[${pagePath}]`,
+      expect.stringContaining('SyntaxError'),
+    )
   })
 
-  test('handles missing front matter delimiters', async () => {
+  it('should handle missing front matter delimiters', async () => {
     const pagePath = join(pagesDir, 'invalid-8.md')
     const result = await loadMarkdown(pagePath)
 
     expect(result).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pagePath, locale.markdownNotCorrectFormat)
+    expect(mockWarn).toHaveBeenCalledWith('🦠', `[${pagePath}]`, locale.markdownNotCorrectFormat)
   })
 
-  test('handles file read errors', async () => {
+  it('should handle file read errors', async () => {
     const pagePath = join(pagesDir, 'non-existent.md')
     const result = await loadMarkdown(pagePath)
 
     expect(result).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pagePath, expect.stringContaining('ResolveMessage'))
+    expect(mockWarn).toHaveBeenCalledWith(
+      '🦠',
+      `[${pagePath}]`,
+      expect.stringContaining('ResolveMessage'),
+    )
   })
 })
 
 describe('cleanPath', () => {
-  test('removes file extensions', () => {
+  it('should remove file extensions', () => {
     expect(cleanPath('/page.tsx')).toBe('/page')
   })
 
-  test('handles root path correctly', () => {
+  it('should handle root path correctly', () => {
     expect(cleanPath('/index.ts')).toBe('/')
   })
 
-  test('removes nested index paths', () => {
+  it('should remove nested index paths', () => {
     expect(cleanPath('/blog/index/index.tsx')).toBe('/blog')
   })
 
-  test('normalizes multiple slashes', () => {
+  it('should normalize multiple slashes', () => {
     expect(cleanPath('//about//')).toBe('/about')
   })
 
-  test('adds slash at the beginning when not present', () => {
+  it('should add slash at the beginning when not present', () => {
     expect(cleanPath('about')).toBe('/about')
   })
 
-  test('handles edge cases', () => {
+  it('should handle edge cases', () => {
     expect(cleanPath('')).toBe('/')
     expect(cleanPath('index.tsx')).toBe('/')
     expect(cleanPath('/index')).toBe('/')
@@ -208,7 +228,7 @@ describe('cleanPath', () => {
 })
 
 describe('loadPage', () => {
-  test('processes valid TSX page with extra params', async () => {
+  it('should process valid TSX page with extra params', async () => {
     const page = await loadPage('valid-1.tsx', pagesDir, viewsDir)
 
     expect(page).toEqual({
@@ -219,7 +239,7 @@ describe('loadPage', () => {
     })
   })
 
-  test('processes valid TS page with explicit path', async () => {
+  it('should process valid TS page with explicit path', async () => {
     const page = await loadPage('valid-2.ts', pagesDir, viewsDir)
 
     expect(page).toEqual({
@@ -229,7 +249,7 @@ describe('loadPage', () => {
     })
   })
 
-  test('processes valid page JSX with redirect and status', async () => {
+  it('should process valid JSX page with redirect and status', async () => {
     const page = await loadPage('valid-3.jsx', pagesDir, viewsDir)
 
     expect(page).toEqual({
@@ -240,7 +260,7 @@ describe('loadPage', () => {
     })
   })
 
-  test('processes valid JS page with view and status', async () => {
+  it('should process valid JS page with view and status', async () => {
     const page = await loadPage('valid-7.js', pagesDir, viewsDir)
 
     expect(page).toEqual({
@@ -251,7 +271,7 @@ describe('loadPage', () => {
     })
   })
 
-  test('processes valid nested page with view and status', async () => {
+  it('should process valid nested page with view and status', async () => {
     const page = await loadPage('nested/valid.ts', pagesDir, viewsDir)
 
     expect(page).toEqual({
@@ -261,7 +281,7 @@ describe('loadPage', () => {
     })
   })
 
-  test('processes valid JSON page with path', async () => {
+  it('should process valid JSON page with path', async () => {
     const page = await loadPage('valid-5.json', pagesDir, viewsDir)
 
     expect(page).toEqual({
@@ -272,7 +292,7 @@ describe('loadPage', () => {
     })
   })
 
-  test('processes page with non-existent view', async () => {
+  it('should process page with non-existent view', async () => {
     const page = await loadPage('invalid-2.tsx', pagesDir, viewsDir)
 
     expect(page).toEqual({
@@ -282,13 +302,13 @@ describe('loadPage', () => {
     })
   })
 
-  test('discards empty page file', async () => {
+  it('should discard empty page file', async () => {
     const page = await loadPage('invalid-1.tsx', pagesDir, viewsDir)
 
     expect(page).toBeUndefined()
   })
 
-  test('discards unsupported page file', async () => {
+  it('should discard unsupported page file', async () => {
     const page = await loadPage('invalid-3.tsx', pagesDir, viewsDir)
 
     expect(page).toBeUndefined()
@@ -298,11 +318,11 @@ describe('loadPage', () => {
 describe('loadPages', async () => {
   const pages = await loadPages(pagesDir, viewsDir)
 
-  test('loads correct number of pages', () => {
+  it('should load correct number of pages', () => {
     expect(pages.length).toEqual(10)
   })
 
-  test('loads pages in correct order', () => {
+  it('should load pages in correct order', () => {
     const order = [
       'nested/valid.ts',
       'invalid-2.tsx',
@@ -323,7 +343,7 @@ describe('loadPages', async () => {
 })
 
 describe('loadView', () => {
-  test('loads valid view component', async () => {
+  it('should load valid view component', async () => {
     const pageData = {
       file: join(pagesDir, 'valid-1.tsx'),
       view: join(viewsDir, 'Test.tsx'),
@@ -334,7 +354,7 @@ describe('loadView', () => {
     expect(typeof view).toBe('function')
   })
 
-  test('warns when view is not defined', async () => {
+  it('should warn when view is not defined', async () => {
     const page = {
       file: join(pagesDir, 'test.tsx'),
       path: '/test',
@@ -342,10 +362,10 @@ describe('loadView', () => {
     const view = await loadView(page)
 
     expect(view).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(page.file, locale.noViewDefined)
+    expect(mockWarn).toHaveBeenCalledWith('🦠', `[${page.file}]`, locale.noViewDefined)
   })
 
-  test('warns when view file does not exist', async () => {
+  it('should warn when view file does not exist', async () => {
     const pageData = {
       file: join(pagesDir, 'test.tsx'),
       view: join(viewsDir, 'NonExistent.tsx'),
@@ -354,10 +374,14 @@ describe('loadView', () => {
     const view = await loadView(pageData)
 
     expect(view).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pageData.view, locale.viewNotFoundOrNotSupported)
+    expect(mockWarn).toHaveBeenCalledWith(
+      '🦠',
+      `[${pageData.view}]`,
+      locale.viewNotFoundOrNotSupported,
+    )
   })
 
-  test('warns when view file has invalid extension', async () => {
+  it('should warn when view file has invalid extension', async () => {
     const pageData = {
       file: join(pagesDir, 'test.tsx'),
       view: join(viewsDir, 'test.txt'),
@@ -366,10 +390,14 @@ describe('loadView', () => {
     const view = await loadView(pageData)
 
     expect(view).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pageData.view, locale.viewNotFoundOrNotSupported)
+    expect(mockWarn).toHaveBeenCalledWith(
+      '🦠',
+      `[${pageData.view}]`,
+      locale.viewNotFoundOrNotSupported,
+    )
   })
 
-  test('warns when view has no default export', async () => {
+  it('should warn when view has no default export', async () => {
     const pageData = {
       file: join(pagesDir, 'test.tsx'),
       view: join(viewsDir, 'NoDefault.tsx'),
@@ -378,10 +406,10 @@ describe('loadView', () => {
     const view = await loadView(pageData)
 
     expect(view).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pageData.view, locale.noDefaultExport)
+    expect(mockWarn).toHaveBeenCalledWith('🦠', `[${pageData.view}]`, locale.noDefaultExport)
   })
 
-  test('warns when default export is not a function', async () => {
+  it('should warn when default export is not a function', async () => {
     const pageData = {
       file: join(pagesDir, 'test.tsx'),
       view: join(viewsDir, 'NoFunction.tsx'),
@@ -390,10 +418,10 @@ describe('loadView', () => {
     const view = await loadView(pageData)
 
     expect(view).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pageData.view, locale.noDefaultExport)
+    expect(mockWarn).toHaveBeenCalledWith('🦠', `[${pageData.view}]`, locale.noDefaultExport)
   })
 
-  test('returns undefined when import fails', async () => {
+  it('should return undefined when import fails', async () => {
     const pageData = {
       file: join(pagesDir, 'test.tsx'),
       view: join(viewsDir, 'InvalidSyntax.tsx'),
@@ -402,10 +430,14 @@ describe('loadView', () => {
     const view = await loadView(pageData)
 
     expect(view).toBeUndefined()
-    expectMockWarnToHaveBeenCalledWith(pageData.view, expect.stringContaining('BuildMessage'))
+    expect(mockWarn).toHaveBeenCalledWith(
+      '🦠',
+      `[${pageData.view}]`,
+      expect.stringContaining('BuildMessage'),
+    )
   })
 
-  test('handles async view components', async () => {
+  it('should handle async view components', async () => {
     const pageData = {
       file: join(pagesDir, 'test.tsx'),
       view: join(viewsDir, 'Async.tsx'),
@@ -418,8 +450,9 @@ describe('loadView', () => {
 })
 
 describe('createPage', () => {
-  test('creates redirect handler', async () => {
-    const mockContext = { redirect: mock() } as unknown as Context
+  it('should create redirect handler', async () => {
+    const context = new Context(new Request('https://example.com/test'))
+    const redirect = spyOn(context, 'redirect')
     const pageData = {
       file: join(viewsDir, 'redirect.tsx'),
       path: '/old',
@@ -428,13 +461,13 @@ describe('createPage', () => {
     }
     const handler = await createPage(pageData, [])
 
-    await handler?.(mockContext, async () => {})
+    await handler?.(context, async () => {})
 
     expect(handler).toBeDefined()
-    expect(mockContext.redirect).toHaveBeenCalledWith(pageData.redirect, pageData.status)
+    expect(redirect).toHaveBeenCalledWith(pageData.redirect, pageData.status)
   })
 
-  test('does not create handler when the view is not defined', async () => {
+  it('should not create handler when the view is not defined', async () => {
     const pageData = {
       file: join(viewsDir, 'test.tsx'),
       path: '/test',
@@ -444,7 +477,7 @@ describe('createPage', () => {
     expect(handler).toBeUndefined()
   })
 
-  test('does not create handler when the view is invalid', async () => {
+  it('should not create handler when the view is invalid', async () => {
     const pageData = {
       file: join(viewsDir, 'test.tsx'),
       view: join(viewsDir, 'NoDefault.tsx'),
@@ -455,7 +488,7 @@ describe('createPage', () => {
     expect(handler).toBeUndefined()
   })
 
-  test('does not create handler when the view is non-existent', async () => {
+  it('should not create handler when the view is non-existent', async () => {
     const pageData = {
       file: join(viewsDir, 'test.tsx'),
       view: join(viewsDir, 'NonExistent.tsx'),
@@ -466,11 +499,9 @@ describe('createPage', () => {
     expect(handler).toBeUndefined()
   })
 
-  test('creates handler with status code', async () => {
-    const mockContext = {
-      status: mock(),
-      render: mock(),
-    } as unknown as Context
+  it('should create handler with status code', async () => {
+    const context = new Context(new Request('https://example.com/test'))
+    const status = spyOn(context, 'status')
     const pageData = {
       file: join(viewsDir, 'test.tsx'),
       view: join(viewsDir, 'Test.tsx'),
@@ -479,49 +510,50 @@ describe('createPage', () => {
     }
     const handler = await createPage(pageData, [])
 
-    await handler?.(mockContext, async () => {})
+    await handler?.(context, async () => {})
 
     expect(handler).toBeDefined()
-    expect(mockContext.status).toHaveBeenCalledWith(201)
+    expect(status).toHaveBeenCalledWith(201)
   })
 
-  test('handles Response return from view', async () => {
-    const mockContext = {} as unknown as Context
+  it('should handle Response return from view', async () => {
+    const context = new Context(new Request('https://example.com/test'))
     const pageData = {
       file: join(pagesDir, 'response.tsx'),
       view: join(viewsDir, 'Response.tsx'),
       path: '/test',
     }
     const handler = await createPage(pageData, [])
-    const response = await handler?.(mockContext, async () => {})
+    const response = await handler?.(context, async () => {})
 
     expect(handler).toBeDefined()
     expect(response).toBeInstanceOf(Response)
   })
 
-  test('throws non-Response errors', async () => {
+  it('should throw non-Response errors', async () => {
     const testError = new Error('Test error')
-    const mockContext = {
-      render: mock(() => {
-        throw testError
-      }),
-    } as unknown as Context
+    const context = new Context(new Request('https://example.com/test'))
     const pageData = {
       file: join(pagesDir, 'test.tsx'),
       view: join(viewsDir, 'Test.tsx'),
       path: '/test',
     }
+
+    spyOn(context, 'render').mockImplementation(() => {
+      throw testError
+    })
+
     const handler = await createPage(pageData, [])
-    const response = handler?.(mockContext, async () => {})
+    const response = handler?.(context, async () => {})
 
     expect(handler).toBeDefined()
     expect(response).rejects.toThrow(testError)
   })
 
-  test('passes correct data to view component', async () => {
+  it('should pass correct data to view component', async () => {
     const mockView = mock()
     const mockViewModule = () => ({ default: mockView })
-    const mockContext = { render: mock() } as unknown as Context
+    const context = new Context(new Request('https://example.com/test'))
     const pageViewPath = join(viewsDir, 'Mock.tsx')
     const pageData: PageData = {
       file: join(pagesDir, 'valid-1.tsx'),
@@ -534,18 +566,19 @@ describe('createPage', () => {
 
     const handler = await createPage(pageData, pageList)
 
-    await handler?.(mockContext, async () => {})
+    await handler?.(context, async () => {})
 
     expect(handler).toBeDefined()
     expect(mockView).toHaveBeenCalledWith({
-      context: mockContext,
+      context,
       pages: pageList,
       page: pageData,
     })
   })
 
-  test('handles empty view response', async () => {
-    const mockContext = { render: mock() } as unknown as Context
+  it('should handle empty view response', async () => {
+    const context = new Context(new Request('https://example.com/test'))
+    const render = spyOn(context, 'render')
     const pageData = {
       file: join(pagesDir, 'test.tsx'),
       view: join(viewsDir, 'Empty.tsx'),
@@ -553,15 +586,15 @@ describe('createPage', () => {
     }
     const handler = await createPage(pageData, [])
 
-    await handler?.(mockContext, async () => {})
+    await handler?.(context, async () => {})
 
     expect(handler).toBeDefined()
-    expect(mockContext.render).toHaveBeenCalledWith('')
+    expect(render).toHaveBeenCalledWith('')
   })
 })
 
 describe('createPages', () => {
-  test('registers all valid pages', async () => {
+  it('should register all valid pages', async () => {
     const app = new Hono()
     const pages = await loadPages(pagesDir, viewsDir)
 
@@ -570,7 +603,7 @@ describe('createPages', () => {
     expect(app.routes.length).toEqual(7)
   })
 
-  test('registers pages in correct order', async () => {
+  it('should register pages in correct order', async () => {
     const app = new Hono()
     const pages = await loadPages(pagesDir, viewsDir)
     const order = ['/nested/valid', '/valid-1', '/test', '/valid-3', '/valid-4', '/something', '/*']
@@ -584,13 +617,13 @@ describe('createPages', () => {
 })
 
 describe('createServer', () => {
-  test('mikrob initializes application with default directories', async () => {
+  it('should initialize application with default directories', async () => {
     const app = await createServer()
 
     expect(app.routes.length).toBe(2)
   })
 
-  test('handles non-existent directories', async () => {
+  it('should handle non-existent directories', async () => {
     const app = await createServer({
       staticDir: 'non-existent',
       pagesDir: 'non-existent',
@@ -600,13 +633,13 @@ describe('createServer', () => {
     expect(app.routes.length).toBe(2)
   })
 
-  test('mikrob initializes application with custom directories', async () => {
+  it('should initialize application with custom directories', async () => {
     const app = await createServer({ staticDir, pagesDir, viewsDir })
 
     expect(app.routes.length).toBe(9)
   })
 
-  test('registers routes from pages', async () => {
+  it('should register routes from pages', async () => {
     const app = await createServer({ staticDir, pagesDir, viewsDir })
     const registeredPaths = app.routes.map((route) => route.path)
 
@@ -614,7 +647,7 @@ describe('createServer', () => {
     expect(registeredPaths).toContain('/valid-1')
   })
 
-  test('handles request to existing page', async () => {
+  it('should handle request to existing page', async () => {
     const app = await createServer({ staticDir, pagesDir, viewsDir })
 
     const request = new Request('http://localhost/valid-1', {
@@ -628,14 +661,14 @@ describe('createServer', () => {
     expect(text).toContain('Hello Test!')
   })
 
-  test('handles request to non-existent page', async () => {
+  it('should handle request to non-existent page', async () => {
     const app = await createServer()
     const response = await app.request('/non-existent')
 
     expect(response.status).toBe(404)
   })
 
-  test('handles redirect pages', async () => {
+  it('should handle redirect pages', async () => {
     const app = await createServer({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-3')
 
@@ -643,14 +676,14 @@ describe('createServer', () => {
     expect(response.headers.get('Location')).toBe('https://domain.com')
   })
 
-  test('handles pages with custom status codes', async () => {
+  it('should handle pages with custom status codes', async () => {
     const app = await createServer({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-7')
 
     expect(response.status).toBe(201)
   })
 
-  test('handles pages with custom Response', async () => {
+  it('should handle pages with custom Response', async () => {
     const app = await createServer({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-4')
 
@@ -658,7 +691,7 @@ describe('createServer', () => {
     expect(response.status).toBe(403)
   })
 
-  test('applies JSX renderer middleware', async () => {
+  it('should apply JSX renderer middleware', async () => {
     const app = await createServer({ staticDir, pagesDir, viewsDir })
     const response = await app.request('/valid-1')
 
@@ -667,7 +700,7 @@ describe('createServer', () => {
 })
 
 describe('mikrob', () => {
-  test('does not reinitialize application on file change when not in watch mode', async () => {
+  it('should not reinitialize application on file change when not in watch mode', async () => {
     const mockWatch = mock(watch)
 
     mock.module('node:fs', () => ({ watch: mockWatch }))
@@ -676,7 +709,7 @@ describe('mikrob', () => {
     expect(mockWatch).not.toHaveBeenCalled()
   })
 
-  test('reinitializes application on file change in watch mode', async () => {
+  it('should reinitialize application on file change in watch mode', async () => {
     const mockWatch = mock(watch)
 
     mock.module('node:fs', () => ({ watch: mockWatch }))
