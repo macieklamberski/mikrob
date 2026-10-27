@@ -48,6 +48,7 @@ export type PageView = (props: {
 
 export const showWarn = (file: string | undefined, error: unknown): undefined => {
   const message = (error instanceof Error && error.stack) || `${error}`
+  // biome-ignore lint/suspicious/noConsole: Reporting a page or view that fails to load is what mikrob does at runtime.
   console.warn('🦠', `[${file}]`, message)
 }
 
@@ -224,7 +225,7 @@ export const createServer = async (options: MikrobOptions = {}): Promise<Hono> =
   return app
 }
 
-export const mikrob = async (options: MikrobOptions = {}) => {
+export const mikrob = async (options: MikrobOptions = {}): Promise<Hono> => {
   let app = await createServer(options)
 
   if (execArgv.includes('--watch')) {

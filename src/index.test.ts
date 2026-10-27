@@ -27,6 +27,7 @@ const staticDir = path.resolve('src/mocks/static')
 const pagesDir = path.resolve('src/mocks/pages')
 const viewsDir = path.resolve('src/mocks/views')
 
+// biome-ignore lint/suspicious/noConsole: The original console.warn is kept to restore it after each test mocks it.
 const realWarn = console.warn
 let mockWarn: ReturnType<typeof mock>
 
@@ -319,7 +320,7 @@ describe('loadPages', async () => {
   const pages = await loadPages(pagesDir, viewsDir)
 
   it('should load correct number of pages', () => {
-    expect(pages.length).toEqual(10)
+    expect(pages.length).toBe(10)
   })
 
   it('should load pages in correct order', () => {
@@ -600,7 +601,7 @@ describe('createPages', () => {
 
     await createPages(app, pages)
 
-    expect(app.routes.length).toEqual(7)
+    expect(app.routes.length).toBe(7)
   })
 
   it('should register pages in correct order', async () => {

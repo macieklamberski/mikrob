@@ -16,5 +16,5 @@ jobs:
       id-token: write
     uses: macieklamberski/kvalita/.github/workflows/shared-release.yml@main
     with:
-      bun-version: "1.2.20"
+      bun-version: 1.2.20
     secrets: inherit
