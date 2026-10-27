@@ -30,7 +30,7 @@
     "hono": "^4.13.3"
   },
   "devDependencies": {
-    "@types/bun": "^1.4.0",
+    "@types/bun": "^1.4.4",
     "kvalita": "^1.29.0"
   }
 }
