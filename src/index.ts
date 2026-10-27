@@ -14,7 +14,7 @@ const leadingSlashRegex = /^/
 const repeatedSlashRegex = /\/+/g
 const trailingIndexRegex = /(?:\/index)+$/
 const trailingSlashRegex = /\/+$/
-const frontMatterRegex = /^---\n(.*?)\n---\n(.*)/s
+const frontMatterRegex = /^---\n(?<frontMatter>.*?)\n---\n(?<body>.*)/s
 const jsonFileRegex = /\.json$/i
 const markdownFileRegex = /\.md/i
 
@@ -81,15 +81,15 @@ export const loadModule = async <T>(
 export const loadMarkdown = async (filePath: string): Promise<PageDefinition | undefined> => {
   try {
     const file = (await import(filePath, { with: { type: 'text' } })).default
-    const match = file.match(frontMatterRegex)
+    const groups = file.match(frontMatterRegex)?.groups
 
-    if (!match) {
+    if (!groups) {
       return showWarn(filePath, locale.markdownNotCorrectFormat)
     }
 
     return {
-      ...JSON.parse(match[1]),
-      body: match[2],
+      ...JSON.parse(groups.frontMatter),
+      body: groups.body,
     }
   } catch (error) {
     showWarn(filePath, error)
