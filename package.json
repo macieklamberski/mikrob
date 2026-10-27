@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@types/node": "^24.13.3",
-    "hono": "^4.13.3"
+    "hono": "^4.13.13"
   },
   "devDependencies": {
     "@types/bun": "^1.4.0",
