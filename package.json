@@ -26,11 +26,11 @@
     "prepare": "lefthook install"
   },
   "dependencies": {
-    "@types/node": "^24.13.3",
-    "hono": "^4.13.3"
+    "@types/node": "^26.6.6",
+    "hono": "^4.13.14"
   },
   "devDependencies": {
-    "@types/bun": "^1.4.0",
+    "@types/bun": "^1.4.4",
     "kvalita": "^1.31.0"
   }
 }
