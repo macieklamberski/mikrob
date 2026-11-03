@@ -121,7 +121,6 @@ describe('loadModule', () => {
     const pagePath = join(pagesDir, 'valid-5.json')
     const content = await loadModule(pagePath, { asJson: true })
 
-    expect(content).toBeDefined()
     expect(typeof content).toBe('object')
     expect(content).toEqual({
       view: 'Test.tsx',
@@ -545,10 +544,10 @@ describe('createPage', () => {
     })
 
     const handler = await createPage(pageData, [])
-    const response = handler?.(context, async () => {})
+    const throwing = () => handler?.(context, async () => {})
 
     expect(handler).toBeDefined()
-    expect(response).rejects.toThrow(testError)
+    expect(throwing()).rejects.toThrow(testError)
   })
 
   it('should pass correct data to view component', async () => {
