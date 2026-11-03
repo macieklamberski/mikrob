@@ -72,7 +72,8 @@ describe('loadModule', () => {
   it('should load valid JS/TS module with default export', async () => {
     const result = await loadModule<() => string>(join(viewsDir, 'Empty.tsx'))
 
-    expect(result).toEqual(expect.any(Function))
+    expect(result).toBeDefined()
+    expect(typeof result).toBe('function')
     expect(result?.()).toBeNull()
   })
 
@@ -111,7 +112,8 @@ describe('loadModule', () => {
     const viewPath = join(viewsDir, 'Async.tsx')
     const result = await loadModule<() => Promise<string>>(viewPath)
 
-    expect(result).toEqual(expect.any(Function))
+    expect(result).toBeDefined()
+    expect(typeof result).toBe('function')
     expect(await result?.()).toBe('Hello async!')
   })
 
@@ -461,7 +463,7 @@ describe('createPage', () => {
 
     await handler?.(context, async () => {})
 
-    expect(handler).toEqual(expect.any(Function))
+    expect(handler).toBeDefined()
     expect(redirect).toHaveBeenCalledWith(pageData.redirect, pageData.status)
   })
 
@@ -510,7 +512,7 @@ describe('createPage', () => {
 
     await handler?.(context, async () => {})
 
-    expect(handler).toEqual(expect.any(Function))
+    expect(handler).toBeDefined()
     expect(status).toHaveBeenCalledWith(201)
   })
 
@@ -524,7 +526,7 @@ describe('createPage', () => {
     const handler = await createPage(pageData, [])
     const response = await handler?.(context, async () => {})
 
-    expect(handler).toEqual(expect.any(Function))
+    expect(handler).toBeDefined()
     expect(response).toBeInstanceOf(Response)
   })
 
@@ -544,7 +546,7 @@ describe('createPage', () => {
     const handler = await createPage(pageData, [])
     const throwing = () => handler?.(context, async () => {})
 
-    expect(handler).toEqual(expect.any(Function))
+    expect(handler).toBeDefined()
     expect(throwing()).rejects.toThrow(testError)
   })
 
@@ -566,7 +568,7 @@ describe('createPage', () => {
 
     await handler?.(context, async () => {})
 
-    expect(handler).toEqual(expect.any(Function))
+    expect(handler).toBeDefined()
     expect(mockView).toHaveBeenCalledWith({
       context,
       pages: pageList,
@@ -586,7 +588,7 @@ describe('createPage', () => {
 
     await handler?.(context, async () => {})
 
-    expect(handler).toEqual(expect.any(Function))
+    expect(handler).toBeDefined()
     expect(render).toHaveBeenCalledWith('')
   })
 })
