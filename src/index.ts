@@ -139,8 +139,8 @@ export const loadPages = async (pagesDir: string, viewsDir: string): Promise<Pag
   const pageList: PageList = []
   const fileList = existsSync(pagesDir) ? readdirSync(pagesDir, { recursive: true }) : []
 
-  for (const fileName of fileList.map(String)) {
-    const pageData = await loadPage(fileName, pagesDir, viewsDir)
+  for (const fileEntry of fileList) {
+    const pageData = await loadPage(String(fileEntry), pagesDir, viewsDir)
 
     if (pageData) {
       pageList.push(pageData)
