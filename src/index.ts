@@ -40,11 +40,19 @@ export type PageData = PageDefinition & {
 
 export type PageList = Array<PageData>
 
-export type PageView = (props: {
+export type LoadModuleOptions = {
+  asJson?: boolean
+}
+
+export type PageViewProps = {
   context: Context
   pages: PageList
   page: PageData
-}) => Response | HtmlEscapedString | Promise<HtmlEscapedString> | null
+}
+
+export type PageView = (
+  props: PageViewProps,
+) => Response | HtmlEscapedString | Promise<HtmlEscapedString> | null
 
 export const showWarn = (file: string | undefined, error: unknown): undefined => {
   const message = (error instanceof Error && error.stack) || `${error}`
@@ -69,7 +77,7 @@ export const isValidFile = (filePath: string, fileRegex: RegExp): boolean => {
 
 export const loadModule = async <T>(
   filePath: string,
-  { asJson }: { asJson?: boolean } = {},
+  { asJson }: LoadModuleOptions = {},
 ): Promise<T | undefined> => {
   try {
     return (await import(filePath, asJson ? { with: { type: 'json' } } : undefined)).default

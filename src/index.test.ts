@@ -72,8 +72,7 @@ describe('loadModule', () => {
   it('should load valid JS/TS module with default export', async () => {
     const result = await loadModule<() => string>(join(viewsDir, 'Empty.tsx'))
 
-    expect(result).toBeDefined()
-    expect(typeof result).toBe('function')
+    expect(result).toEqual(expect.any(Function))
     expect(result?.()).toBeNull()
   })
 
@@ -112,8 +111,7 @@ describe('loadModule', () => {
     const viewPath = join(viewsDir, 'Async.tsx')
     const result = await loadModule<() => Promise<string>>(viewPath)
 
-    expect(result).toBeDefined()
-    expect(typeof result).toBe('function')
+    expect(result).toEqual(expect.any(Function))
     expect(await result?.()).toBe('Hello async!')
   })
 
@@ -121,7 +119,6 @@ describe('loadModule', () => {
     const pagePath = join(pagesDir, 'valid-5.json')
     const content = await loadModule(pagePath, { asJson: true })
 
-    expect(content).toBeDefined()
     expect(typeof content).toBe('object')
     expect(content).toEqual({
       view: 'Test.tsx',
@@ -464,7 +461,7 @@ describe('createPage', () => {
 
     await handler?.(context, async () => {})
 
-    expect(handler).toBeDefined()
+    expect(handler).toEqual(expect.any(Function))
     expect(redirect).toHaveBeenCalledWith(pageData.redirect, pageData.status)
   })
 
@@ -513,7 +510,7 @@ describe('createPage', () => {
 
     await handler?.(context, async () => {})
 
-    expect(handler).toBeDefined()
+    expect(handler).toEqual(expect.any(Function))
     expect(status).toHaveBeenCalledWith(201)
   })
 
@@ -527,7 +524,7 @@ describe('createPage', () => {
     const handler = await createPage(pageData, [])
     const response = await handler?.(context, async () => {})
 
-    expect(handler).toBeDefined()
+    expect(handler).toEqual(expect.any(Function))
     expect(response).toBeInstanceOf(Response)
   })
 
@@ -545,10 +542,10 @@ describe('createPage', () => {
     })
 
     const handler = await createPage(pageData, [])
-    const response = handler?.(context, async () => {})
+    const throwing = () => handler?.(context, async () => {})
 
-    expect(handler).toBeDefined()
-    expect(response).rejects.toThrow(testError)
+    expect(handler).toEqual(expect.any(Function))
+    expect(throwing()).rejects.toThrow(testError)
   })
 
   it('should pass correct data to view component', async () => {
@@ -569,7 +566,7 @@ describe('createPage', () => {
 
     await handler?.(context, async () => {})
 
-    expect(handler).toBeDefined()
+    expect(handler).toEqual(expect.any(Function))
     expect(mockView).toHaveBeenCalledWith({
       context,
       pages: pageList,
@@ -589,7 +586,7 @@ describe('createPage', () => {
 
     await handler?.(context, async () => {})
 
-    expect(handler).toBeDefined()
+    expect(handler).toEqual(expect.any(Function))
     expect(render).toHaveBeenCalledWith('')
   })
 })
